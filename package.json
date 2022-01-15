@@ -1,0 +1,35 @@
+{
+  "name": "tic-tac-toe",
+  "description": " Pet project for playing tic-tac-toe.",
+  "version": "1.0.0",
+  "keywords": [
+    "tic-tac-toe"
+  ],
+  "author": "Papina Ruslan <clu@tut.by>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/riubi/tic-tac-toe.git"
+  },
+  "bugs": {
+    "url": "https://github.com/riubi/tic-tac-toe/issues"
+  },
+  "homepage": "https://github.com/riubi/tic-tac-toe#readme",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js",
+    "server": "nodemon app.js",
+    "client": "npm run start --prefix client",
+    "dev": "concurrently \"run server\" \"npm run client\""
+  },
+  "dependencies": {
+    "config": "^3.3.6",
+    "uuid": "^8.3.2",
+    "ws": "^8.4.0"
+  },
+  "devDependencies": {
+    "concurrently": "^7.0.0"
+  }
+}
