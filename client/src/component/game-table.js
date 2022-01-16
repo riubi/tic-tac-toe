@@ -1,8 +1,6 @@
 import React from 'react'
 import { TouchableHighlight, Button, Text, View, StyleSheet } from 'react-native'
-import { Col, Row, Grid } from 'react-native-easy-grid'
 import SearchGameButton from './search-game-button.js'
-import renderIf from 'render-if'
 
 class GameTable extends React.Component {
     constructor({

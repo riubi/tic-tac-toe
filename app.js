@@ -1,7 +1,7 @@
 import { WebSocketServer } from 'ws'
-import { Lobby } from './api/domain/lobby.js'
+import { Lobby } from './src/domain/lobby.js'
+import Router from './src/service/router.js'
 import Express from 'express'
-import Router from './api/service/router.js'
 import Config from 'config'
 
 const PORT = process.env.PORT || Config.get('port'),

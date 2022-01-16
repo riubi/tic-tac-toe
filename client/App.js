@@ -1,9 +1,9 @@
 import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
-import NickNameInput from './component/nick-name-input.js'
-import SearchGameButton from './component/search-game-button.js'
-import GameTable from './component/game-table.js'
-import GameApi from './sdk/game-api.js'
+import NickNameInput from './src/component/nick-name-input.js'
+import SearchGameButton from './src/component/search-game-button.js'
+import GameTable from './src/component/game-table.js'
+import GameApi from './src/sdk/game-api.js'
 
 export class App extends React.Component {
   constructor() {

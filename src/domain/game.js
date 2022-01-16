@@ -54,19 +54,18 @@ class Game {
         this.#iterateTurn(position)
 
         if (this.#rule.isGameFinished()) {
-            this.finishGame(this.#rule.getWinStatus(index))
+            this.finishGame(this.#rule.getWinStatusCallback())
         }
     }
 
-    finishGame(status) {
+    finishGame(statusCallback) {
         this.#players.forEach((player, index) => {
-            player.finishGame(status)
+            player.finishGame(statusCallback(index))
         })
 
         console.log({
             message: 'Game finished.',
-            game: this.#id,
-            status: status
+            game: this.#id
         })
     }
 
@@ -118,7 +117,7 @@ class GamePerspective {
     }
 
     playerQuite() {
-        this.#game.finishGame('player quite')
+        this.#game.finishGame(() => 'player quite')
     }
 }
 
@@ -187,15 +186,16 @@ class ClassicRule {
     }
 
     /**
-     * @param {Integer} index 
-     * @returns {String}
+     * @returns {Function}
      */
-    getWinStatus(index) {
-        if (this.#winnerIndex == -1) {
-            return 'draw'
-        }
+    getWinStatusCallback() {
+        return (index) => {
+            if (this.#winnerIndex == -1) {
+                return 'draw'
+            }
 
-        return index == this.#winnerIndex ? 'win' : 'lose'
+            return index == this.#winnerIndex ? 'win' : 'lose'
+        }
     }
 }
 
