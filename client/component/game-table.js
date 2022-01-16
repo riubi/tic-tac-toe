@@ -1,5 +1,5 @@
 import React from 'react'
-import { TouchableHighlight, Text, View, StyleSheet } from 'react-native'
+import { TouchableHighlight, Button, Text, View, StyleSheet } from 'react-native'
 import { Col, Row, Grid } from 'react-native-easy-grid'
 import SearchGameButton from './search-game-button.js'
 import renderIf from 'render-if'
@@ -9,6 +9,7 @@ class GameTable extends React.Component {
         subscriber,
         moveHandler,
         searchHandler,
+        quiteHandler,
         isFirstTurn,
         opponent
     }) {
@@ -17,6 +18,7 @@ class GameTable extends React.Component {
         this.subscriber = subscriber
         this.moveHandler = moveHandler
         this.searchHandler = searchHandler
+        this.quiteHandler = quiteHandler
         this.rows = [0, 1, 2];
 
         this.state = {
@@ -115,6 +117,10 @@ class GameTable extends React.Component {
     }
 
     render() {
+        const bottomButton = this.state.isGameActive
+            ? <Button onPress={() => this.quiteHandler()} color='steelblue' title='Quit' />
+            : <SearchGameButton style={styles.searchButton} handler={this.searchHandler} />
+
         return (
             <View>
                 <View style={styles.header}>
@@ -128,9 +134,10 @@ class GameTable extends React.Component {
                 <View style={styles.content} >
                     <View style={styles.table}>
                         {this.rows.map((col, a) => (
-                            <View style={styles.col}>
+                            <View key={'col' + a} style={styles.col}>
                                 {this.rows.map((row, b) => (
                                     <TouchableHighlight
+                                        key={'row' + b}
                                         style={styles.row}
                                         onPress={() => this.updateTurn(col * this.rows.length + row)}
                                         underlayColor="whitesmoke">
@@ -144,9 +151,7 @@ class GameTable extends React.Component {
                     </View>
                 </View>
                 <View style={styles.footer}>
-                    {renderIf(!this.state.isGameActive)(
-                        <SearchGameButton style={styles.searchButton} handler={this.searchHandler} />
-                    )}
+                    {bottomButton}
                 </View>
             </View >
         )

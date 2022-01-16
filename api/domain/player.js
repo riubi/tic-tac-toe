@@ -83,6 +83,10 @@ export default class Player {
         this.#messenger.notifyAboutFinish(status)
     }
 
+    playerQuite() {
+        this.#gamePerspective.playerQuite()
+    }
+
     /**
      * @param {String} message
      * @param {Integer} code

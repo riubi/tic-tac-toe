@@ -28,6 +28,9 @@ router
     .on('makeMove', (player, data) => {
         player.makeMove(data)
     })
+    .on('quite', (player, data) => {
+        player.playerQuite()
+    })
     .on('close', (player, data) => {
         lobby.disconnect(player)
     })

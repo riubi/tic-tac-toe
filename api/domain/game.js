@@ -54,8 +54,20 @@ class Game {
         this.#iterateTurn(position)
 
         if (this.#rule.isGameFinished()) {
-            this.#finishGame()
+            this.finishGame(this.#rule.getWinStatus(index))
         }
+    }
+
+    finishGame(status) {
+        this.#players.forEach((player, index) => {
+            player.finishGame(status)
+        })
+
+        console.log({
+            message: 'Game finished.',
+            game: this.#id,
+            status: status
+        })
     }
 
     /**
@@ -64,17 +76,6 @@ class Game {
     #iterateTurn(position) {
         this.#turnIndex = this.#turnIndex == 0 ? 1 : 0
         this.#players[this.#turnIndex].notifyAboutMove({ position: position })
-    }
-
-    #finishGame() {
-        this.#players.forEach((player, index) => {
-            player.finishGame(this.#rule.getWinStatus(index))
-        })
-
-        console.log({
-            message: 'Game finished.',
-            game: this.#id
-        })
     }
 }
 
@@ -114,6 +115,10 @@ class GamePerspective {
      */
     makeMove(data) {
         this.#game.makeMove(this.#player, parseInt(data.position))
+    }
+
+    playerQuite() {
+        this.#game.finishGame('player quite')
     }
 }
 

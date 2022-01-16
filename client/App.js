@@ -50,6 +50,7 @@ export class App extends React.Component {
             subscriber={this.gameApi.getSubscriber()}
             searchHandler={this.gameApi.searchGame()}
             moveHandler={this.gameApi.makeMove()}
+            quiteHandler={this.gameApi.quite()}
             isFirstTurn={this.state.isFirstTurn}
             opponent={this.state.opponent} />
         </View>
@@ -64,8 +65,7 @@ export class App extends React.Component {
         <View><Text style={styles.title}>Something goes wrong =(</Text></View>
       )
       default: return (
-        <View><Text style={styles.title}>Loading...</Text>
-        </View>
+        <View><Text style={styles.title}>Loading...</Text></View>
       )
     }
   }

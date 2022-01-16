@@ -61,6 +61,10 @@ export default class GameApi {
         return () => this.send('searchGame', {})
     }
 
+    quite() {
+        return () => this.send('quite', {})
+    }
+
     send(type, data) {
         data.type = type
         console.log(data)
