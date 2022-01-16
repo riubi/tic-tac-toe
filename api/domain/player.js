@@ -1,4 +1,4 @@
-import Util from "../service/util.js"
+import Util from "../util/util.js"
 import Messenger from "./messenger.js"
 import { GamePerspective } from "./game.js"
 

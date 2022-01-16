@@ -1,5 +1,5 @@
 import Player from "./player.js"
-import Util from "../service/util.js"
+import Util from "../util/util.js"
 
 class Game {
     #id

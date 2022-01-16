@@ -157,9 +157,8 @@ const styles = StyleSheet.create({
     content: {
         overflow: 'hidden',
         marginVertical: 20,
-        marginHorizontal: 20,
-        maxWith: 400,
-    },
+        marginHorizontal: 20
+    }, 
     header: {
         flex: 1,
         flexDirection: 'row',

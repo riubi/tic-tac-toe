@@ -10,34 +10,41 @@ export class App extends React.Component {
     super()
 
     this.state = {
-      showLobby: true,
+      interfaceName: 'loading',
       isFirstTurn: false
     }
 
-    this.gameApi = new GameApi("ws://localhost:8090")
+    this.gameApi = new GameApi("wss://riubi-tic-tac-toe.herokuapp.com:3001")
+    //this.gameApi = new GameApi("ws://localhost:8090")
+  }
+
+  openInterface(interfaceName) {
+    this.state.interfaceName = interfaceName
+    this.setState(this.state)
   }
 
   componentDidMount() {
-    this.gameApi.getSubscriber().on('gameStarted', (data) => {
-      if (this.state.showLobby) {
-        this.setState({
-          showLobby: false,
-          isFirstTurn: data.isYourTurn,
-          opponent: data.opponent,
-        })
-      }
-    })
+    this.gameApi.getSubscriber()
+      .on('open', (data) => {
+        this.openInterface('lobby')
+      })
+      .on('error', (data) => {
+        this.openInterface('error')
+      })
+      .on('gameStarted', (data) => {
+        if (this.state.showLobby) {
+          this.setState({
+            interfaceName: 'game',
+            isFirstTurn: data.isYourTurn,
+            opponent: data.opponent,
+          })
+        }
+      })
   }
 
-  render() {
-    const template = this.state.showLobby
-      ? (
-        <View>
-          <NickNameInput handler={this.gameApi.setName()} />
-          <SearchGameButton handler={this.gameApi.searchGame()} />
-        </View>
-      )
-      : (
+  renderInterface() {
+    switch (this.state.interfaceName) {
+      case 'game': return (
         <View>
           <GameTable
             subscriber={this.gameApi.getSubscriber()}
@@ -47,11 +54,27 @@ export class App extends React.Component {
             opponent={this.state.opponent} />
         </View>
       )
+      case 'lobby': return (
+        <View>
+          <NickNameInput handler={this.gameApi.setName()} />
+          <SearchGameButton handler={this.gameApi.searchGame()} />
+        </View>
+      )
+      case 'error': return (
+        <View><Text style={styles.title}>Something goes wrong =(</Text></View>
+      )
+      default: return (
+        <View><Text style={styles.title}>Loading...</Text>
+        </View>
+      )
+    }
+  }
 
+  render() {
     return (
       <View style={styles.container}>
         <Text style={styles.title}>Tic-Tac-Toe</Text>
-        {template}
+        {this.renderInterface()}
       </View>
     )
   }
