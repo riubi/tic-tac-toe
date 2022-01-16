@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, View, StyleSheet } from 'react-native'
+import { TouchableHighlight, Text, View, StyleSheet } from 'react-native'
 import { Col, Row, Grid } from 'react-native-easy-grid'
 import SearchGameButton from './search-game-button.js'
 import renderIf from 'render-if'
@@ -126,39 +126,39 @@ class GameTable extends React.Component {
                     </Text>
                 </View>
                 <View style={styles.content} >
-                    <Grid style={styles.table}>
+                    <View style={styles.table}>
                         {this.rows.map((col, a) => (
-                            <Col key={a} style={styles.col}>
+                            <View style={styles.col}>
                                 {this.rows.map((row, b) => (
-                                    <Row
-                                        key={b}
+                                    <TouchableHighlight
                                         style={styles.row}
-                                        onPress={() => this.updateTurn(col * this.rows.length + row)}>
+                                        onPress={() => this.updateTurn(col * this.rows.length + row)}
+                                        underlayColor="whitesmoke">
                                         <Text style={this.handlers.text.style(col * this.rows.length + row)}>
                                             {this.handlers.text.content(col * this.rows.length + row)}
                                         </Text>
-                                    </Row>
+                                    </TouchableHighlight>
                                 ))}
-                            </Col>
+                            </View>
                         ))}
-                    </Grid>
+                    </View>
                 </View>
                 <View style={styles.footer}>
                     {renderIf(!this.state.isGameActive)(
                         <SearchGameButton style={styles.searchButton} handler={this.searchHandler} />
                     )}
                 </View>
-            </View>
+            </View >
         )
     }
 }
 
 const styles = StyleSheet.create({
     content: {
-        overflow: 'hidden',
         marginVertical: 20,
-        marginHorizontal: 20
-    }, 
+        marginHorizontal: 20,
+        height: 240
+    },
     header: {
         flex: 1,
         flexDirection: 'row',
@@ -179,14 +179,19 @@ const styles = StyleSheet.create({
         height: 60
     },
     table: {
-        margin: -2,
-        marginVertical: 20,
-    },
-    col: {},
-    row: {
-        margin: 0,
-        height: 80,
         flex: 1,
+        marginVertical: 20,
+        overflow: 'hidden'
+    },
+    col: {
+        flex: 1,
+        margin: -1,
+        flexDirection: 'row',
+    },
+    row: {
+        flex: 1,
+        margin: 0,
+        padding: 0,
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 1,

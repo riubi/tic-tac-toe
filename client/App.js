@@ -14,7 +14,7 @@ export class App extends React.Component {
       isFirstTurn: false
     }
 
-    this.gameApi = new GameApi("wss://riubi-tic-tac-toe.herokuapp.com:3001")
+    this.gameApi = new GameApi("wss://riubi-tic-tac-toe.herokuapp.com")
     //this.gameApi = new GameApi("ws://localhost:8090")
   }
 
@@ -32,7 +32,7 @@ export class App extends React.Component {
         this.openInterface('error')
       })
       .on('gameStarted', (data) => {
-        if (this.state.showLobby) {
+        if (this.state.interfaceName != 'game') {
           this.setState({
             interfaceName: 'game',
             isFirstTurn: data.isYourTurn,

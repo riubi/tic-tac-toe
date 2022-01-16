@@ -1,12 +1,17 @@
 import { WebSocketServer } from 'ws'
 import { Lobby } from './api/domain/lobby.js'
+import Express from 'express'
 import Router from './api/service/router.js'
 import Config from 'config'
 
+const PORT = process.env.PORT || Config.get('port'),
+    HOST = Config.get('host')
+
+const expressServer = Express()
+    .listen(PORT, HOST, () => console.log(`Listening on ${HOST}:${PORT}`));
+
 const
-    server = new WebSocketServer({
-        port: Config.get('port')
-    }),
+    server = new WebSocketServer({ server: expressServer }),
     router = new Router(Config.get('debug')),
     lobby = new Lobby()
 
