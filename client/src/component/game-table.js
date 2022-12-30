@@ -188,7 +188,6 @@ const styles = StyleSheet.create({
     },
     col: {
         flex: 1,
-        margin: -1,
         flexDirection: 'row',
     },
     row: {
@@ -198,7 +197,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 1,
-        borderColor: 'lightgray',
+        borderColor: 'white',
+        backgroundColor: '#DFDFDF'
     },
     cross: {
         fontSize: 20,

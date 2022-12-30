@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native'
 import NickNameInput from './src/component/nick-name-input.js'
 import SearchGameButton from './src/component/search-game-button.js'
 import GameTable from './src/component/game-table.js'
+import MadeBy from './src/component/made-by.js'
 import GameApi from './src/sdk/game-api.js'
 import Config from './src/sdk/config.js'
 
@@ -59,6 +60,7 @@ export class App extends React.Component {
         <View>
           <NickNameInput handler={this.gameApi.setName()} />
           <SearchGameButton handler={this.gameApi.searchGame()} />
+          <MadeBy />
         </View>
       )
       case 'error': return (
@@ -73,8 +75,10 @@ export class App extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>Tic-Tac-Toe</Text>
-        {this.renderInterface()}
+        <View style={styles.block}>
+          <Text style={styles.title}>Tic-Tac-Toe</Text>
+          {this.renderInterface()}
+        </View>
       </View>
     )
   }
@@ -83,9 +87,13 @@ export class App extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    alignItems: 'center',
     justifyContent: 'center',
-    marginVertical: 20,
     marginHorizontal: 20,
+  },
+  block: {
+    maxWidth: 244,
+    width: '100%',
   },
   title: {
     fontSize: 28,
