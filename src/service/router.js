@@ -1,5 +1,5 @@
 import Player from "../domain/player.js"
-import Messenger from "../domain/messenger.js"
+import EventEmitter from "../domain/event-emitter.js"
 import { WebSocketServer } from "ws"
 
 /**
@@ -38,7 +38,7 @@ export default class Router {
             connectMethod = this.#routes.get('connect')
 
         socketServer.on('connection', (ws) => {
-            const messenger = new Messenger(ws),
+            const messenger = new EventEmitter(ws),
                 player = new Player(messenger)
 
             if (connectMethod) {
@@ -52,7 +52,7 @@ export default class Router {
 
                 if (this.#debug) {
                     console.log({ player: player.getId(), data: data })
-                    messenger.send('debug', {
+                    messenger.emit('debug', {
                         data: data
                     })
                 }
@@ -64,7 +64,7 @@ export default class Router {
                         console.log({ player: player.getId(), error: error })
                     }
                 } else if (data.type == 'ping') {
-                    messenger.send('ping')
+                    messenger.emit('ping')
                 }
             })
 

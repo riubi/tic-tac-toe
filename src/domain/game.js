@@ -1,5 +1,6 @@
+import ClassicRule from "./game-rule.js"
 import Player from "./player.js"
-import Util from "../util/util.js"
+import Util from "../service/util.js"
 
 class Game {
     #id
@@ -18,7 +19,7 @@ class Game {
         this.#id = Util.uuid()
 
         this.#players.forEach((player) => {
-            if (player.inGame()) {
+            if (player.getGamePerspective().isActive()) {
                 throw new Error('Player already in game.')
             }
         })
@@ -47,7 +48,7 @@ class Game {
      */
     makeMove(player, position) {
         if (this.whoseTurn() != player) {
-            throw new Error('Not your turn.')
+            throw new Error('Not this player turn.')
         }
 
         this.#rule.mark(position, this.#turnIndex)
@@ -74,7 +75,7 @@ class Game {
      */
     #iterateTurn(position) {
         this.#turnIndex = this.#turnIndex == 0 ? 1 : 0
-        this.#players[this.#turnIndex].notifyAboutMove({ position: position })
+        this.#players[this.#turnIndex].notifyAboutOpponentMoved({ position: position })
     }
 }
 
@@ -95,6 +96,13 @@ class GamePerspective {
     }
 
     /**
+     * @returns {Boolean}
+     */
+    isActive() {
+        return true
+    }
+
+    /**
      * @returns {String}
      */
     getOpponentNickName() {
@@ -104,7 +112,7 @@ class GamePerspective {
     /**
      * @returns {Boolean}
      */
-    isYourTurn() {
+    isPlayerTurn() {
         return this.#game.whoseTurn() == this.#player
     }
 
@@ -121,82 +129,48 @@ class GamePerspective {
     }
 }
 
-class ClassicRule {
-    #winPatterns = [
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8],
-        [0, 3, 6],
-        [1, 4, 7],
-        [2, 5, 8],
-        [0, 4, 8],
-        [2, 4, 6]
-    ]
-    #winnerIndex = -1
-    #size = 3
-    #map
 
-    constructor() {
-        this.#map = new Map()
+class InactiveGamePerspective extends GamePerspective {
+    #player
 
-        for (let i = 0; i < Math.pow(this.#size, 2); i++) {
-            this.#map.set(i, null)
-        }
+    /**
+     * @param {Player} player 
+     */
+    constructor(player) {
+        this.#player = player
     }
 
     /**
-     * @throws {Error}
-     * @param {*} position 
-     * @param {*} playerIndex 
+     * @returns {Boolean}
      */
-    mark(position, playerIndex) {
-        let isValidPosition = position < Math.pow(this.#size, 2)
-
-        if (isValidPosition && this.#map.get(position) == null) {
-            this.#map.set(position, playerIndex)
-        } else {
-            throw new Error('This cell is already occupied.')
-        }
-    }
-
-    isGameFinished() {
-        if (this.#winnerIndex > -1) {
-            return true
-        }
-
-        let isDraw = true
-        for (let i = 0; i < this.#winPatterns.length; i++) {
-            const p = this.#winPatterns[i],
-                a = this.#map.get(p[0]),
-                b = this.#map.get(p[1]),
-                c = this.#map.get(p[2]);
-
-            if (a == null || b == null || c == null) {
-                isDraw = false
-                continue
-            }
-
-            if (a == b && b == c) {
-                this.#winnerIndex = a
-                return true
-            }
-        }
-
-        return isDraw
+    isActive() {
+        return false
     }
 
     /**
-     * @returns {Function}
+     * @returns {String}
      */
-    getWinStatusCallback() {
-        return (index) => {
-            if (this.#winnerIndex == -1) {
-                return 'draw'
-            }
+    getOpponentNickName() {
+        throw new Error('Player has no active game.')
+    }
 
-            return index == this.#winnerIndex ? 'win' : 'lose'
-        }
+    /**
+     * @returns {Boolean}
+     */
+    isPlayerTurn() {
+        throw new Error('Player has no active game.')
+    }
+
+    /**
+     * @param {Object} data 
+     */
+    makeMove(data) {
+        this.#player.error('Player has no active game.')
+    }
+
+    playerQuite() {
+        this.#player.error('Player has no active game.')
     }
 }
 
-export { Game, GamePerspective }
+export { Game, GamePerspective, InactiveGamePerspective }

@@ -1,19 +1,20 @@
-import Util from "../util/util.js"
-import Messenger from "./messenger.js"
-import { GamePerspective } from "./game.js"
+import Util from "../service/util.js"
+import EventEmitter from "./event-emitter.js"
+import { GamePerspective, InactiveGamePerspective } from "./game.js"
 
 export default class Player {
     #id
-    #messenger
+    #emitter
     #nickName = ''
     #gamePerspective
 
     /**
-     * @param {Messenger} messenger
+     * @param {EventEmitter} emitter
      */
-    constructor(messenger) {
+    constructor(emitter) {
         this.#id = Util.uuid()
-        this.#messenger = messenger
+        this.#emitter = emitter
+        this.#gamePerspective = new InactiveGamePerspective(this)
     }
 
     /**
@@ -38,30 +39,17 @@ export default class Player {
     }
 
     /**
-     * @returns {Boolean}
+     * @returns {GamePerspective}
      */
-    inGame() {
-        return !!this.#gamePerspective
-    }
-
-    /**
-     * @param {Object} data 
-     */
-    makeMove(data) {
-        try {
-            this.inGame()
-                ? this.#gamePerspective.makeMove(data)
-                : this.showError('Player has no active game.')
-        } catch (error) {
-            this.showError(error.message)
-        }
+    getGamePerspective() {
+        return this.#gamePerspective
     }
 
     /**
      * @param {Object} turn 
      */
-    notifyAboutMove(turn) {
-        this.#messenger.notifyAboutMove(turn)
+    notifyAboutOpponentMoved(turn) {
+        this.#emitter.opponentMoved(turn)
     }
 
     /**
@@ -69,9 +57,9 @@ export default class Player {
      */
     startGame(gamePerspective) {
         this.#gamePerspective = gamePerspective
-        this.#messenger.notifyAboutStart(
+        this.#emitter.gameStarted(
             gamePerspective.getOpponentNickName(),
-            gamePerspective.isYourTurn()
+            gamePerspective.isPlayerTurn()
         )
     }
 
@@ -79,12 +67,8 @@ export default class Player {
      * @param {String} status 
      */
     finishGame(status) {
-        this.#gamePerspective = null
-        this.#messenger.notifyAboutFinish(status)
-    }
-
-    playerQuite() {
-        this.#gamePerspective.playerQuite()
+        this.#gamePerspective = new InactiveGamePerspective(this)
+        this.#emitter.gameFinished(status)
     }
 
     /**
@@ -92,6 +76,6 @@ export default class Player {
      * @param {Integer} code
      */
     showError(message, code) {
-        this.#messenger.showError(message, code)
+        this.#emitter.error(message, code)
     }
 }

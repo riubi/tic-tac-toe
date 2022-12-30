@@ -1,5 +1,5 @@
 import Player from "./player.js"
-import { Game } from "./game.js"
+import Game from "./game.js"
 
 /**
  * @param {Set<Player>} #players
@@ -31,7 +31,7 @@ class Lobby {
      * @param {Player} player 
      */
     searchAndStartGame(player) {
-        if (player.inGame()) {
+        if (player.getGamePerspective().isActive()) {
             player.showError('Player already in active game.')
         } else {
             const opponent = this.#searchQueue.pop()

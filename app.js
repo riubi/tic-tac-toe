@@ -1,5 +1,5 @@
 import { WebSocketServer } from 'ws'
-import { Lobby } from './src/domain/lobby.js'
+import Lobby from './src/domain/lobby.js'
 import Router from './src/service/router.js'
 import Express from 'express'
 import Config from 'config'
@@ -26,10 +26,10 @@ router
         lobby.searchAndStartGame(player)
     })
     .on('makeMove', (player, data) => {
-        player.makeMove(data)
+        player.getGamePerspective().makeMove(data)
     })
     .on('quite', (player, data) => {
-        player.playerQuite()
+        player.getGamePerspective().playerQuite()
     })
     .on('close', (player, data) => {
         lobby.disconnect(player)
