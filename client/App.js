@@ -1,9 +1,10 @@
 import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
-import NickNameInput from './src/component/nick-name-input.js'
-import SearchGameButton from './src/component/search-game-button.js'
-import GameTable from './src/component/game-table.js'
-import GameApi from './src/sdk/game-api.js'
+import NickNameInput from './src/component/nick-name-input'
+import SearchGameButton from './src/component/search-game-button'
+import GameTable from './src/component/game-table'
+import GameApi from './src/sdk/game-api'
+import Config from './src/sdk/config'
 
 export class App extends React.Component {
   constructor() {
@@ -14,8 +15,7 @@ export class App extends React.Component {
       isFirstTurn: false
     }
 
-    this.gameApi = new GameApi("wss://riubi-tic-tac-toe.herokuapp.com")
-    //this.gameApi = new GameApi("ws://localhost:8090")
+    this.gameApi = new GameApi("wss://" + Config.SERVER_URL)
   }
 
   openInterface(interfaceName) {
