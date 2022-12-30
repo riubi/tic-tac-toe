@@ -7,6 +7,8 @@ import Config from 'config'
 const PORT = process.env.PORT || Config.get('port'),
     HOST = Config.get('host')
 
+console.log(`Starting listen on ${HOST}:${PORT}`)
+
 const expressServer = Express()
     .listen(PORT, HOST, () => console.log(`Listening on ${HOST}:${PORT}`));
 
