@@ -1,6 +1,6 @@
 import { Sender } from "ws"
 
-export default class Messenger {
+export default class EventEmitter {
     #connection
 
     /**
@@ -14,7 +14,7 @@ export default class Messenger {
      * @param {String} type 
      * @param {Object} data 
      */
-    send(type, data) {
+    emit(type, data) {
         data.type = type
         this.#connection.send(JSON.stringify(data))
     }
@@ -23,8 +23,8 @@ export default class Messenger {
      * @param {String} oponent 
      * @param {Boolean} isYourTurn 
      */
-    notifyAboutStart(oponent, isYourTurn) {
-        this.send('gameStarted', {
+    gameStarted(oponent, isYourTurn) {
+        this.emit('gameStarted', {
             opponent: oponent,
             isYourTurn: isYourTurn
         })
@@ -33,8 +33,8 @@ export default class Messenger {
     /**
      * @param {Object} turn
      */
-    notifyAboutMove(turn) {
-        this.send('opponentMoved', {
+    opponentMoved(turn) {
+        this.emit('opponentMoved', {
             position: turn.position
         })
     }
@@ -42,8 +42,8 @@ export default class Messenger {
     /**
      * @param {String} status 
      */
-    notifyAboutFinish(status) {
-        this.send('gameFinished', {
+    gameFinished(status) {
+        this.emit('gameFinished', {
             status: status
         })
     }
@@ -52,8 +52,8 @@ export default class Messenger {
      * @param {String} message 
      * @param {Integer} code
      */
-    showError(message, code) {
-        this.send('error', {
+    error(message, code) {
+        this.emit('error', {
             message: message,
             code: code
         })
