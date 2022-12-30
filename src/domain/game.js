@@ -130,7 +130,7 @@ class GamePerspective {
 }
 
 
-class InactiveGamePerspective extends GamePerspective {
+class InactiveGamePerspective {
     #player
 
     /**

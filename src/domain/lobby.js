@@ -1,10 +1,10 @@
 import Player from "./player.js"
-import Game from "./game.js"
+import { Game } from "./game.js"
 
 /**
  * @param {Set<Player>} #players
  */
-class Lobby {
+export default class Lobby {
     #players
     #searchQueue
 
@@ -42,5 +42,3 @@ class Lobby {
         }
     }
 }
-
-export { Lobby }

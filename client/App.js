@@ -15,7 +15,7 @@ export class App extends React.Component {
       isFirstTurn: false
     }
 
-    this.gameApi = new GameApi("wss://" + Config.SERVER_URL)
+    this.gameApi = new GameApi(Config.SERVER_URL)
   }
 
   openInterface(interfaceName) {
