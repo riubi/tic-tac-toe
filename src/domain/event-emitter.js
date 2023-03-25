@@ -1,6 +1,6 @@
 import { Sender } from "ws"
 
-export default class EventEmitter {
+class EventEmitter {
     #connection
 
     /**
@@ -20,12 +20,12 @@ export default class EventEmitter {
     }
 
     /**
-     * @param {String} oponent 
+     * @param {String} oponentName 
      * @param {Boolean} isYourTurn 
      */
-    gameStarted(oponent, isYourTurn) {
+    gameStarted(oponentName, isYourTurn) {
         this.emit('gameStarted', {
-            opponent: oponent,
+            opponent: oponentName,
             isYourTurn: isYourTurn
         })
     }
@@ -59,3 +59,5 @@ export default class EventEmitter {
         })
     }
 }
+
+export { EventEmitter }

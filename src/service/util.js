@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 
-export default class Util {
+class Util {
     /**
      * @returns {String}
      */
@@ -22,3 +22,5 @@ export default class Util {
         return Math.floor(Math.random() * max)
     }
 }
+
+export { Util }

@@ -1,12 +1,12 @@
-import Util from "../service/util.js"
-import EventEmitter from "./event-emitter.js"
-import { GamePerspective, InactiveGamePerspective } from "./game.js"
+import { Util } from "../service/util.js"
+import { EventEmitter } from "./event-emitter.js"
+import { Game } from "./game.js"
 
-export default class Player {
+class Player {
     #id
     #emitter
     #nickName = ''
-    #gamePerspective
+    #game
 
     /**
      * @param {EventEmitter} emitter
@@ -14,7 +14,6 @@ export default class Player {
     constructor(emitter) {
         this.#id = Util.uuid()
         this.#emitter = emitter
-        this.#gamePerspective = new InactiveGamePerspective(this)
     }
 
     /**
@@ -39,43 +38,51 @@ export default class Player {
     }
 
     /**
-     * @returns {GamePerspective}
+     * @param {Number} position 
      */
-    getGamePerspective() {
-        return this.#gamePerspective
+    makeMove(position) {
+        this.#getGame().makeMove(this, position)
+    }
+
+    quite() {
+        this.#getGame().finishGame(() => 'player quite')
     }
 
     /**
-     * @param {Object} turn 
+     * @returns {EventEmitter}
      */
-    notifyAboutOpponentMoved(turn) {
-        this.#emitter.opponentMoved(turn)
+    getEmitter() {
+        return this.#emitter
     }
 
     /**
-     * @param {GamePerspective} gamePerspective 
+     * @param {Game} game 
      */
-    startGame(gamePerspective) {
-        this.#gamePerspective = gamePerspective
-        this.#emitter.gameStarted(
-            gamePerspective.getOpponentNickName(),
-            gamePerspective.isPlayerTurn()
-        )
+    attachGame(game) {
+        this.#game = game
+    }
+
+    dettachGame() {
+        this.#game = null
     }
 
     /**
-     * @param {String} status 
+     * @returns {Boolean}
      */
-    finishGame(status) {
-        this.#gamePerspective = new InactiveGamePerspective(this)
-        this.#emitter.gameFinished(status)
+    hasActiveGame() {
+        return !!this.#game
     }
 
     /**
-     * @param {String} message
-     * @param {Integer} code
+     * @returns {Game}
      */
-    showError(message, code) {
-        this.#emitter.error(message, code)
+    #getGame() {
+        if (!this.hasActiveGame()) {
+            throw new Error('Player has no active game.')
+        }
+
+        return this.#game
     }
 }
+
+export { Player }

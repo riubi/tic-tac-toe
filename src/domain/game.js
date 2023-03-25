@@ -1,37 +1,21 @@
-import ClassicRule from "./game-rule.js"
-import Player from "./player.js"
-import Util from "../service/util.js"
+import { Util } from "../service/util.js"
+import { Player } from "./player.js"
 
 class Game {
     #id
+    #turnIndex = 0
     #players
-    #turnIndex
     #rule
 
     /**
-     * @param {Player} firstPlayer 
-     * @param {Player} secondPlayer 
+     * @param {List<Player>} players 
      */
-    constructor(firstPlayer, secondPlayer) {
-        this.#players = [firstPlayer, secondPlayer]
-        this.#turnIndex = Util.getRandomInt(1)
-        this.#rule = new ClassicRule()
+    constructor(players) {
         this.#id = Util.uuid()
+        this.#rule = new ClassicRule()
+        this.#players = players
 
-        this.#players.forEach((player) => {
-            if (player.getGamePerspective().isActive()) {
-                throw new Error('Player already in game.')
-            }
-        })
-
-        firstPlayer.startGame(new GamePerspective(firstPlayer, secondPlayer, this))
-        secondPlayer.startGame(new GamePerspective(secondPlayer, firstPlayer, this))
-
-        console.log({
-            message: 'Game started.',
-            game: this.#id,
-            players: [firstPlayer.getId(), secondPlayer.getId()]
-        })
+        this.#startGame()
     }
 
     /**
@@ -43,8 +27,9 @@ class Game {
 
     /**
      * @throws {Error}
+     * 
      * @param {Player} player 
-     * @param {Integer} position 
+     * @param {Number} position 
      */
     makeMove(player, position) {
         if (this.whoseTurn() != player) {
@@ -61,7 +46,8 @@ class Game {
 
     finishGame(statusCallback) {
         this.#players.forEach((player, index) => {
-            player.finishGame(statusCallback(index))
+            player.dettachGame()
+            player.getEmitter().gameFinished(statusCallback(index))
         })
 
         console.log({
@@ -75,102 +61,108 @@ class Game {
      */
     #iterateTurn(position) {
         this.#turnIndex = this.#turnIndex == 0 ? 1 : 0
-        this.#players[this.#turnIndex].notifyAboutOpponentMoved({ position: position })
+        this.#players[this.#turnIndex].getEmitter().opponentMoved({ 
+            position: position 
+        })
+    }
+
+    #startGame() {
+        this.#players.forEach((player) => {
+            if (player.hasActiveGame()) {
+                throw new Error('Player already in game.')
+            }
+        })
+
+        const playerIds = []
+        this.#players.forEach((player) => {
+            player.attachGame(this)
+            playerIds.push(player.getId())
+        })
+
+        console.log({
+            message: 'Game started.',
+            game: this.#id,
+            players: playerIds
+        })
     }
 }
 
-class GamePerspective {
-    #player
-    #opponent
-    #game
+class ClassicRule {
+    #winPatterns = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6]
+    ]
+    #winnerIndex = -1
+    #size = 3
+    #map
 
-    /**
-     * @param {Player} player 
-     * @param {Player} opponent
-     * @param {Game} game 
-     */
-    constructor(player, opponent, game) {
-        this.#player = player
-        this.#opponent = opponent
-        this.#game = game
-    }
+    constructor() {
+        this.#map = new Map()
 
-    /**
-     * @returns {Boolean}
-     */
-    isActive() {
-        return true
-    }
-
-    /**
-     * @returns {String}
-     */
-    getOpponentNickName() {
-        return this.#opponent.getNickName()
-    }
-
-    /**
-     * @returns {Boolean}
-     */
-    isPlayerTurn() {
-        return this.#game.whoseTurn() == this.#player
+        for (let i = 0; i < Math.pow(this.#size, 2); i++) {
+            this.#map.set(i, null)
+        }
     }
 
     /**
      * @throws {Error}
-     * @param {Object} data 
+     * @param {*} position 
+     * @param {*} playerIndex 
      */
-    makeMove(data) {
-        this.#game.makeMove(this.#player, parseInt(data.position))
+    mark(position, playerIndex) {
+        let isValidPosition = position < Math.pow(this.#size, 2)
+
+        if (isValidPosition && this.#map.get(position) == null) {
+            this.#map.set(position, playerIndex)
+        } else {
+            throw new Error('This cell is already occupied.')
+        }
     }
 
-    playerQuite() {
-        this.#game.finishGame(() => 'player quite')
+    isGameFinished() {
+        if (this.#winnerIndex > -1) {
+            return true
+        }
+
+        let isDraw = true
+        for (let i = 0; i < this.#winPatterns.length; i++) {
+            const p = this.#winPatterns[i],
+                a = this.#map.get(p[0]),
+                b = this.#map.get(p[1]),
+                c = this.#map.get(p[2])
+
+            if (a == null || b == null || c == null) {
+                isDraw = false
+                continue
+            }
+
+            if (a == b && b == c) {
+                this.#winnerIndex = a
+                return true
+            }
+        }
+
+        return isDraw
+    }
+
+    /**
+     * @returns {Function}
+     */
+    getWinStatusCallback() {
+        return (playerIndex) => {
+            if (this.#winnerIndex == -1) {
+                return 'draw'
+            }
+
+            return playerIndex == this.#winnerIndex ? 'win' : 'lose'
+        }
     }
 }
 
-
-class InactiveGamePerspective {
-    #player
-
-    /**
-     * @param {Player} player 
-     */
-    constructor(player) {
-        this.#player = player
-    }
-
-    /**
-     * @returns {Boolean}
-     */
-    isActive() {
-        return false
-    }
-
-    /**
-     * @returns {String}
-     */
-    getOpponentNickName() {
-        throw new Error('Player has no active game.')
-    }
-
-    /**
-     * @returns {Boolean}
-     */
-    isPlayerTurn() {
-        throw new Error('Player has no active game.')
-    }
-
-    /**
-     * @param {Object} data 
-     */
-    makeMove(data) {
-        this.#player.error('Player has no active game.')
-    }
-
-    playerQuite() {
-        this.#player.error('Player has no active game.')
-    }
-}
-
-export { Game, GamePerspective, InactiveGamePerspective }
+export { Game, ClassicRule }

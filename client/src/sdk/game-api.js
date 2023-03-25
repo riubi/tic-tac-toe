@@ -13,7 +13,7 @@ export default class GameApi {
         const socket = new WebSocket(server),
 
             fn = (data) => {
-                console.log(data);
+                console.log(data)
                 const handlers = this.#handlers.get(data.type)
                 if (handlers) {
                     handlers.forEach(handler => handler(data))

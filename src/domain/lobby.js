@@ -1,16 +1,13 @@
-import Player from "./player.js"
+import { Player } from "./player.js"
 import { Game } from "./game.js"
 
-/**
- * @param {Set<Player>} #players
- */
-export default class Lobby {
+class Lobby {
     #players
     #searchQueue
 
     constructor() {
         this.#players = new Set()
-        this.#searchQueue = []
+        this.#searchQueue = new Set()
     }
 
     /**
@@ -24,6 +21,7 @@ export default class Lobby {
      * @param {Player} player 
      */
     disconnect(player) {
+        player.hasActiveGame() && player.quite()
         this.#players.delete(player)
     }
 
@@ -31,14 +29,25 @@ export default class Lobby {
      * @param {Player} player 
      */
     searchAndStartGame(player) {
-        if (player.getGamePerspective().isActive()) {
-            player.showError('Player already in active game.')
-        } else {
-            const opponent = this.#searchQueue.pop()
-
-            opponent && opponent != player
-                ? new Game(player, opponent)
-                : this.#searchQueue.push(player)
+        if (player.hasActiveGame()) {
+            throw new Error('Player already has active game.')
         }
+
+        this.#searchQueue.add(player)
+        this.#startGame()
+    }
+
+    #startGame() {
+        if (this.#searchQueue.size < 2) {
+            return
+        }
+
+        const iterator = this.#searchQueue.values()
+        let players = [iterator.next().value, iterator.next().value]
+        players.forEach((player) => this.#searchQueue.delete(player))
+
+        new Game(players.sort(() => Math.random() - 0.5))
     }
 }
+
+export { Lobby }

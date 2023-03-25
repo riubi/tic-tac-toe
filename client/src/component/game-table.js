@@ -17,7 +17,7 @@ class GameTable extends React.Component {
         this.moveHandler = moveHandler
         this.searchHandler = searchHandler
         this.quiteHandler = quiteHandler
-        this.rows = [0, 1, 2];
+        this.rows = [0, 1, 2]
 
         this.state = {
             map: new Map(),

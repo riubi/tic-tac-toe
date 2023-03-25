@@ -1,14 +1,8 @@
-import Player from "../domain/player.js"
-import EventEmitter from "../domain/event-emitter.js"
+import { Player } from "../domain/player.js"
+import { EventEmitter } from "../domain/event-emitter.js"
 import { WebSocketServer } from "ws"
 
-/**
- * @callback Callback
- * @param {Player} player
- * @param {Object} data
- */
-
-export default class Router {
+class Router {
     #debug
     #routes
 
@@ -76,3 +70,5 @@ export default class Router {
         })
     }
 }
+
+export { Router }

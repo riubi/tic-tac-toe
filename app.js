@@ -1,6 +1,6 @@
 import { WebSocketServer } from 'ws'
-import Lobby from './src/domain/lobby.js'
-import Router from './src/service/router.js'
+import { Lobby } from './src/domain/lobby.js'
+import { Router } from './src/service/router.js'
 import Express from 'express'
 import Config from 'config'
 
@@ -10,7 +10,7 @@ const PORT = process.env.PORT || Config.get('port'),
 console.log(`Starting listen on ${HOST}:${PORT}`)
 
 const expressServer = Express()
-    .listen(PORT, HOST, () => console.log(`Listening on ${HOST}:${PORT}`));
+    .listen(PORT, HOST, () => console.log(`Listening on ${HOST}:${PORT}`))
 
 const
     server = new WebSocketServer({ server: expressServer }),
@@ -28,10 +28,10 @@ router
         lobby.searchAndStartGame(player)
     })
     .on('makeMove', (player, data) => {
-        player.getGamePerspective().makeMove(data)
+        player.makeMove(parseInt(data.position))
     })
     .on('quite', (player, data) => {
-        player.getGamePerspective().playerQuite()
+        player.quite()
     })
     .on('close', (player, data) => {
         lobby.disconnect(player)
