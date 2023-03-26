@@ -1,5 +1,6 @@
-import { Player } from "./player.js"
+import { AbstractPlayer } from "./player.js"
 import { Game } from "./game.js"
+import { Bot } from "./bot.js"
 
 class Lobby {
     #players
@@ -11,14 +12,14 @@ class Lobby {
     }
 
     /**
-     * @param {Player} player 
+     * @param {AbstractPlayer} player 
      */
     connect(player) {
         this.#players.add(player)
     }
 
     /**
-     * @param {Player} player 
+     * @param {AbstractPlayer} player 
      */
     disconnect(player) {
         player.hasActiveGame() && player.quite()
@@ -26,7 +27,7 @@ class Lobby {
     }
 
     /**
-     * @param {Player} player 
+     * @param {AbstractPlayer} player 
      */
     searchAndStartGame(player) {
         if (player.hasActiveGame()) {
@@ -35,6 +36,14 @@ class Lobby {
 
         this.#searchQueue.add(player)
         this.#startGame()
+    }
+
+    registerBot() {
+        setInterval(() => {
+            if (this.#searchQueue.size == 1) {
+                this.searchAndStartGame(new Bot())
+            }
+        }, 15000)
     }
 
     #startGame() {

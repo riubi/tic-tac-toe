@@ -44,10 +44,13 @@ class Game {
         }
     }
 
+    isGameFinished() {
+        return this.#rule.isGameFinished()
+    }
+
     finishGame(statusCallback) {
         this.#players.forEach((player, index) => {
-            player.dettachGame()
-            player.getEmitter().gameFinished(statusCallback(index))
+            player.dettachGame(statusCallback(index))
         })
 
         console.log({
@@ -57,13 +60,18 @@ class Game {
     }
 
     /**
+     * @returns Map
+     */
+    getState() {
+        return this.#rule.getState()
+    }
+
+    /**
      * @param {Integer} position 
      */
     #iterateTurn(position) {
         this.#turnIndex = this.#turnIndex == 0 ? 1 : 0
-        this.#players[this.#turnIndex].getEmitter().opponentMoved({ 
-            position: position 
-        })
+        this.#players[this.#turnIndex].notifyAboutOponentMove(position);
     }
 
     #startGame() {
@@ -76,8 +84,7 @@ class Game {
         const playerIds = []
         this.#players.forEach((player, index) => {
             const oponentName = this.#players[index == 0 ? 1 : 0].getNickName()
-            player.attachGame(this)
-            player.getEmitter().gameStarted(oponentName, this.#turnIndex == index)
+            player.attachGame(this, oponentName, this.#turnIndex == index)
             playerIds.push(player.getId())
         })
 
@@ -164,6 +171,13 @@ class ClassicRule {
 
             return playerIndex == this.#winnerIndex ? 'win' : 'lose'
         }
+    }
+
+    /**
+     * @returns Map
+     */
+    getState() {
+        return new Map([...this.#map])
     }
 }
 

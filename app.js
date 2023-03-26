@@ -16,6 +16,7 @@ const
     server = new WebSocketServer({ server: expressServer }),
     router = new Router(Config.get('debug')),
     lobby = new Lobby()
+    lobby.registerBot()
 
 router
     .on('connect', (player, data) => {

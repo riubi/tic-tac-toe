@@ -2,18 +2,12 @@ import { Util } from "../service/util.js"
 import { EventEmitter } from "./event-emitter.js"
 import { Game } from "./game.js"
 
-class Player {
+class AbstractPlayer {
     #id
-    #emitter
-    #nickName = ''
-    #game
+    _game
 
-    /**
-     * @param {EventEmitter} emitter
-     */
-    constructor(emitter) {
+    constructor() {
         this.#id = Util.uuid()
-        this.#emitter = emitter
     }
 
     /**
@@ -21,6 +15,83 @@ class Player {
      */
     getId() {
         return this.#id
+    }
+
+    /**
+     * @param {String} nickName 
+     */
+    setNickName(nickName) { }
+
+    /**
+     * @returns {String}
+     */
+    getNickName() { }
+
+    /**
+     * @param {Number} position 
+     */
+    makeMove(position) { }
+
+    quite() { }
+
+    /**
+     * @param {String} oponentName 
+     * @param {Boolean} isPlayerTurn 
+     */
+    _notifyAboutStart(oponentName, isPlayerTurn) { }
+
+    /**
+     * @param {String} status 
+     */
+    _notifyAboutGameFinish(status) { }
+
+    /**
+     * @param {Number} position 
+     */
+    notifyAboutOponentMove(position) { }
+
+    /**
+     * @param {Game} game 
+     */
+    attachGame(game, oponentName, isPlayerTurn) {
+        this._game = game
+        this._notifyAboutStart(oponentName, isPlayerTurn)
+    }
+
+    dettachGame(status) {
+        this._notifyAboutGameFinish(status)
+        this._game = null
+    }
+
+    /**
+     * @returns {Boolean}
+     */
+    hasActiveGame() {
+        return !!this._game
+    }
+
+    /**
+     * @returns {Game}
+     */
+    _getGame() {
+        if (!this.hasActiveGame()) {
+            throw new Error('Player has no active game.')
+        }
+
+        return this._game
+    }
+}
+
+class Player extends AbstractPlayer {
+    #emitter
+    #nickName = ''
+
+    /**
+     * @param {EventEmitter} emitter
+     */
+    constructor(emitter) {
+        super()
+        this.#emitter = emitter
     }
 
     /**
@@ -41,48 +112,44 @@ class Player {
      * @param {Number} position 
      */
     makeMove(position) {
-        this.#getGame().makeMove(this, position)
+        this._getGame().makeMove(this, position)
     }
 
     quite() {
-        this.#getGame().finishGame(() => 'player quite')
+        this._getGame().finishGame(() => 'player quite')
+    }
+
+    /**
+     * @param {Number} position 
+     */
+    notifyAboutOponentMove(position) {
+        this.#getEmitter().opponentMoved({ 
+            position: position 
+        })
+    }
+
+    /**
+     * @param {String} oponentName 
+     * @param {Boolean} isPlayerTurn 
+     */
+    _notifyAboutStart(oponentName, isPlayerTurn) { 
+        this.#getEmitter().gameStarted(oponentName, isPlayerTurn)
+    }
+
+    /**
+     * @param {String} oponentName 
+     * @param {Boolean} isPlayerTurn 
+     */
+    _notifyAboutGameFinish(status) { 
+        this.#getEmitter().gameFinished(status)
     }
 
     /**
      * @returns {EventEmitter}
      */
-    getEmitter() {
+    #getEmitter() {
         return this.#emitter
-    }
-
-    /**
-     * @param {Game} game 
-     */
-    attachGame(game) {
-        this.#game = game
-    }
-
-    dettachGame() {
-        this.#game = null
-    }
-
-    /**
-     * @returns {Boolean}
-     */
-    hasActiveGame() {
-        return !!this.#game
-    }
-
-    /**
-     * @returns {Game}
-     */
-    #getGame() {
-        if (!this.hasActiveGame()) {
-            throw new Error('Player has no active game.')
-        }
-
-        return this.#game
     }
 }
 
-export { Player }
+export { AbstractPlayer, Player }
