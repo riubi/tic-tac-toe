@@ -74,8 +74,10 @@ class Game {
         })
 
         const playerIds = []
-        this.#players.forEach((player) => {
+        this.#players.forEach((player, index) => {
+            const oponentName = this.#players[index == 0 ? 1 : 0].getNickName()
             player.attachGame(this)
+            player.getEmitter().gameStarted(oponentName, this.#turnIndex == index)
             playerIds.push(player.getId())
         })
 
