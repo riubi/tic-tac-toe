@@ -25,6 +25,7 @@
     "dev": "concurrently \"run server\" \"npm run client\""
   },
   "dependencies": {
+    "@tensorflow/tfjs": "^4.2.0",
     "config": "^3.3.6",
     "express": "^4.17.2",
     "jest": "^29.5.0",
