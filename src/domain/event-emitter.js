@@ -21,12 +21,12 @@ class EventEmitter {
 
     /**
      * @param {String} oponentName 
-     * @param {Boolean} isYourTurn 
+     * @param {Boolean} isMyTurn 
      */
-    gameStarted(oponentName, isYourTurn) {
+    gameStarted(oponentName, isMyTurn) {
         this.emit('gameStarted', {
             opponent: oponentName,
-            isYourTurn: isYourTurn
+            isYourTurn: isMyTurn
         })
     }
 

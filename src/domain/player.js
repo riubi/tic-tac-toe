@@ -36,9 +36,9 @@ class AbstractPlayer {
 
     /**
      * @param {String} oponentName 
-     * @param {Boolean} isPlayerTurn 
+     * @param {Boolean} isMyTurn 
      */
-    _notifyAboutStart(oponentName, isPlayerTurn) { }
+    _notifyAboutStart(oponentName, isMyTurn) { }
 
     /**
      * @param {String} status 
@@ -53,9 +53,9 @@ class AbstractPlayer {
     /**
      * @param {Game} game 
      */
-    attachGame(game, oponentName, isPlayerTurn) {
+    attachGame(game, oponentName, isMyTurn) {
         this._game = game
-        this._notifyAboutStart(oponentName, isPlayerTurn)
+        this._notifyAboutStart(oponentName, isMyTurn)
     }
 
     dettachGame(status) {
@@ -130,10 +130,10 @@ class Player extends AbstractPlayer {
 
     /**
      * @param {String} oponentName 
-     * @param {Boolean} isPlayerTurn 
+     * @param {Boolean} isMyTurn 
      */
-    _notifyAboutStart(oponentName, isPlayerTurn) { 
-        this.#getEmitter().gameStarted(oponentName, isPlayerTurn)
+    _notifyAboutStart(oponentName, isMyTurn) { 
+        this.#getEmitter().gameStarted(oponentName, isMyTurn)
     }
 
     /**

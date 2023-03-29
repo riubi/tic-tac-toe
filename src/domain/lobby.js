@@ -40,10 +40,11 @@ class Lobby {
 
     registerBot() {
         setInterval(() => {
-            if (this.#searchQueue.size == 1) {
-                this.searchAndStartGame(new Bot())
-            }
-        }, 15000)
+            this.searchAndStartGame(new Bot())
+            // if (this.#searchQueue.size == 1) {
+            //     this.searchAndStartGame(new Bot())
+            // }
+        }, 30000)
     }
 
     #startGame() {

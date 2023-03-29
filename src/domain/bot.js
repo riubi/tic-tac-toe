@@ -1,53 +1,80 @@
 import { AbstractPlayer } from "./player.js"
-import * as tf from '@tensorflow/tfjs'
+import * as tf from '@tensorflow/tfjs-node'
 
 class AIModel {
+    #model
+
     constructor() {
-        this.model = this.createModel()
+        this.#model = this.createModel()
     }
 
     createModel() {
         const model = tf.sequential()
-        model.add(tf.layers.dense({ inputShape: [9], units: 64, activation: 'relu' }))
-        model.add(tf.layers.dense({ units: 64, activation: 'relu' }))
-        model.add(tf.layers.dense({ units: 9, activation: 'linear' }))
+        model.add(tf.layers.dense({ units: 9, activation: 'relu', inputShape: [9] }))
 
-        model.compile({ optimizer: 'adam', loss: 'meanSquaredError' })
+        model.compile({
+            optimizer: tf.train.adam(0.001),
+            loss: 'meanSquaredError'
+        })
+
         return model
     }
 
     predict(board) {
-        if (!this.model) {
+        if (!this.#model) {
             throw new Error('Model not initialized')
         }
 
-        const input = tf.tensor2d([board])
-        const output = this.model.predict(input)
-
-        const prediction = output.array()
-        return prediction[0]
+        return this.#model
+            .predict(tf.tensor(board, [1, 9]))
+            .dataSync()
     }
 
-    train(states, nextStates, rewards, actions, done) {
-        const batchSize = states.length
-        const target = this.model.predict(tf.tensor2d(states))
+    /**
+     * @param {String} status 
+     * @param {Game} game 
+     */
+    trainOnGameResults(status, result) {
+        status === 'win' && this.updateWinModel(result)
+    }
 
-        const nextStateValues = this.model.predict(tf.tensor2d(nextStates))
-        const maxNextStateValues = tf.max(nextStateValues, 1)
+    async updateWinModel(result) {
+        const board = [...result.board.values()]
 
-        const targetQs = rewards.map((reward, i) => {
-            if (done[i]) {
-                return reward
-            } else {
-                return reward + 0.99 * maxNextStateValues[i]
+        const outcomes = board.map(value => {
+            if (value === result.winner) {
+                return 1
+            } else if (value == null) {
+                return 0
             }
+            return -1
         })
 
-        for (let i = 0; i < batchSize; i++) {
-            target[i][actions[i]] = targetQs[i]
-        }
+        await this.#trainModel(result, board, outcomes)
+    }
 
-        this.model.fit(tf.tensor2d(states), tf.tensor2d(target), { batchSize })
+    async #trainModel(result, board, outcomes) {
+        const xs = tf.tensor(board, [1, 9])
+        const ys = tf.tensor(outcomes, [1, 9])
+
+        await this.#model.fit(xs, ys, {
+            epochs: 50,
+            batchSize: 32,
+            shuffle: true,
+            verbose: 0
+        })
+
+        xs.dispose()
+        ys.dispose()
+
+        console.log({
+            message: 'Tranning based on game result finished',
+            trainingData: {
+                winIndex: result.winner,
+                board: board,
+                outcomes: outcomes
+            }
+        })
     }
 }
 
@@ -72,36 +99,40 @@ class Bot extends AbstractPlayer {
 
     /**
      * @param {String} oponentName 
-     * @param {Boolean} isPlayerTurn 
+     * @param {Boolean} isMyTurn 
      */
-    _notifyAboutStart(oponentName, isPlayerTurn) {
-        isPlayerTurn && this.#decideMove()
+    _notifyAboutStart(oponentName, isMyTurn) {
+        isMyTurn && this.#suggestBestMove()
+    }
+
+    _notifyAboutGameFinish(status) {
+        aiModel.trainOnGameResults(status, this._getGame().getState())
     }
 
     /**
      * @param {Number} position 
      */
     notifyAboutOponentMove(position) {
-        this.#decideMove()
+        this.#suggestBestMove()
     }
 
-    #decideMove() {
+    #suggestBestMove() {
         if (this._getGame().isGameFinished()) {
             return
         }
 
         setTimeout(() => {
-            this.makeMove(this.#predictMove(this._getGame().getState()))
-        }, 500)
+            this.makeMove(this.#predictMove(this._getGame().getState().board))
+        }, 50)
     }
 
     /**
-     * @param Map board
-     * @returns Number
+     * @param {Array} board
+     * @returns {Number}
      */
     #randomMove(board) {
         const filteredEntries = []
-        this._getGame().getState().forEach((value, key) => {
+        this._getGame().getState().board.forEach((value, key) => {
             value === null && filteredEntries.push(key)
         })
         const randomIndex = Math.floor(Math.random() * filteredEntries.length)
@@ -110,25 +141,28 @@ class Bot extends AbstractPlayer {
     }
 
     /**
-     * @param Map board
-     * @returns Number
+     * @param {Array} board
+     * @returns {Number}
      */
     #predictMove(board) {
-        const convertedBoard = board.map((cell) => (cell === null ? -1 : cell));
-        const predictions = aiModel.predict(convertedBoard);
+        board = [...board.values()]
+
+        const predictions = aiModel.predict(board)
 
         const availableMoves = board
-            .map((cell, index) => (cell === null ? index : -1))
-            .filter((index) => index !== -1)
+            .map((value, index) => (value == null ? index : -1))
+            .filter(value => value !== -1)
 
-        const bestMoveIndex = availableMoves.reduce(
-            (maxIndex, move, _, array) => {
-                predictions[move] > predictions[array[maxIndex]] ? move : array[maxIndex]
-            },
-            availableMoves[0]
-        );
+        availableMoves.sort((a, b) => {
+            return predictions[b] - predictions[a]
+        })
 
-        return bestMoveIndex;
+        console.log({
+            message: 'Bot predicted moves',
+            moves: availableMoves
+        })
+
+        return availableMoves[0]
     }
 }
 

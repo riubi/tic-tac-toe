@@ -8,7 +8,7 @@ class Game {
     #rule
 
     /**
-     * @param {List<Player>} players 
+     * @param {List<AbstractPlayer>} players 
      */
     constructor(players) {
         this.#id = Util.uuid()
@@ -19,7 +19,7 @@ class Game {
     }
 
     /**
-     * @returns {Player}
+     * @returns {AbstractPlayer}
      */
     whoseTurn() {
         return this.#players[this.#turnIndex]
@@ -28,7 +28,7 @@ class Game {
     /**
      * @throws {Error}
      * 
-     * @param {Player} player 
+     * @param {AbstractPlayer} player 
      * @param {Number} position 
      */
     makeMove(player, position) {
@@ -60,7 +60,22 @@ class Game {
     }
 
     /**
-     * @returns Map
+     * @param {AbstractPlayer} player 
+     */
+    getPlayerIndex(player) {
+        let result = -1
+
+        this.#players.forEach((playerIteration, index) => {
+            if (playerIteration === player) {
+                result = index
+            }
+        })
+
+        return result
+    }
+
+    /**
+     * @returns {Map}
      */
     getState() {
         return this.#rule.getState()
@@ -174,10 +189,20 @@ class ClassicRule {
     }
 
     /**
-     * @returns Map
+     * @returns {Integer}
+     */
+    getWinnerIndex() {
+        return this.#winnerIndex
+    }
+
+    /**
+     * @returns {Map}
      */
     getState() {
-        return new Map([...this.#map])
+        return {
+            winner: this.#winnerIndex,
+            board: this.#map,
+        }
     }
 }
 
