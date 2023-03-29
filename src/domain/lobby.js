@@ -24,6 +24,7 @@ class Lobby {
     disconnect(player) {
         player.hasActiveGame() && player.quite()
         this.#players.delete(player)
+        this.#searchQueue.delete(player)
     }
 
     /**
