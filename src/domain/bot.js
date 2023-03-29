@@ -159,6 +159,7 @@ class Bot extends AbstractPlayer {
 
         console.log({
             message: 'Bot predicted moves',
+            predictions: predictions,
             moves: availableMoves
         })
 
