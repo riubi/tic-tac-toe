@@ -64,6 +64,7 @@ class Router {
 
             if (closeMethod) {
                 ws.on('close', (event) => {
+                    console.log({ player: player.getId(), message: 'disconnected' })
                     closeMethod(player, event)
                 })
             }

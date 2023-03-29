@@ -1,11 +1,19 @@
 import { AbstractPlayer } from "./player.js"
+import Queue from 'queue-promise'
 import * as tf from '@tensorflow/tfjs-node'
 
 class AIModel {
     #model
+    #queue
 
     constructor() {
         this.#model = this.createModel()
+
+        this.#queue = new Queue({
+            concurrent: 1,
+            interval: 3000,
+            start: true,
+        })
     }
 
     createModel() {
@@ -13,7 +21,7 @@ class AIModel {
         model.add(tf.layers.dense({ units: 9, activation: 'relu', inputShape: [9] }))
 
         model.compile({
-            optimizer: tf.train.adam(0.001),
+            optimizer: tf.train.adam(),
             loss: 'meanSquaredError'
         })
 
@@ -34,11 +42,18 @@ class AIModel {
      * @param {String} status 
      * @param {Game} game 
      */
-    trainOnGameResults(status, result) {
-        status === 'win' && this.updateWinModel(result)
+    async trainOnGameResults(status, result) {
+        this.#queue.enqueue(() => {
+            try {
+                this.updateWinModel(result)
+            } catch(error) {
+                console.log(error)
+            }
+        })
+        this.#queue.dequeue()
     }
 
-    async updateWinModel(result) {
+    updateWinModel(result) {
         const board = [...result.board.values()]
 
         const outcomes = board.map(value => {
@@ -50,7 +65,7 @@ class AIModel {
             return -1
         })
 
-        await this.#trainModel(result, board, outcomes)
+        return this.#trainModel(result, board, outcomes)
     }
 
     async #trainModel(result, board, outcomes) {

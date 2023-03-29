@@ -29,6 +29,7 @@
     "config": "^3.3.6",
     "express": "^4.17.2",
     "jest": "^29.5.0",
+    "queue-promise": "^2.2.1",
     "save-dev": "^0.0.1-security",
     "uuid": "^8.3.2",
     "ws": "^8.4.0"

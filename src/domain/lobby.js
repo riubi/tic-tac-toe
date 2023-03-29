@@ -45,7 +45,7 @@ class Lobby {
             // if (this.#searchQueue.size == 1) {
             //     this.searchAndStartGame(new Bot())
             // }
-        }, 30000)
+        }, 15000)
     }
 
     #startGame() {

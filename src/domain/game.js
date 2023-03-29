@@ -1,5 +1,5 @@
 import { Util } from "../service/util.js"
-import { Player } from "./player.js"
+import { AbstractPlayer } from "./player.js"
 
 class Game {
     #id
@@ -75,7 +75,7 @@ class Game {
     }
 
     /**
-     * @returns {Map}
+     * @returns {Object}
      */
     getState() {
         return this.#rule.getState()
@@ -196,7 +196,7 @@ class ClassicRule {
     }
 
     /**
-     * @returns {Map}
+     * @returns {Object}
      */
     getState() {
         return {
