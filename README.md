@@ -1,6 +1,6 @@
 Tic-Tac-Toe Multiplayer
 =========
-This pet project is a real-time multiplayer Tic-Tac-Toe game built using WebSockets, Express, React Native and Expo. Players can connect, set their names, and search for games. The game features a bot that automatically joins games when there is a waiting player, ensuring that matches are always available. [Link to DEMO](http://tic-tac-toe.clu.by/)
+This pet project is a real-time multiplayer Tic-Tac-Toe game built using WebSockets, Express, React Native and Expo. Players can connect, set their names, and search for games. [Link to DEMO](http://tic-tac-toe.clu.by/)
 
 ## Features
 - Real-time multiplayer gameplay using WebSockets
