@@ -1,6 +1,6 @@
-import {GameState} from "./GameState.js";
-import {ClassicRule} from "./ClassicRule.js";
-import {Util} from "../../Service/Util.js";
+import {GameState} from "./GameState.js"
+import {ClassicRule} from "./ClassicRule.js"
+import {Util} from "../../Service/Util.js"
 
 /**
  * Manages a Tic-Tac-Toe game session.
@@ -10,27 +10,27 @@ class Game {
      * Unique identifier for the game.
      * @type {string}
      */
-    #id = Util.uuid();
+    #id = Util.uuid()
 
     /**
      * The game state instance.
      * @type {GameState}
      */
-    #gameState;
+    #gameState
 
     /**
      * List of players participating in the game.
      * @type {AbstractPlayer[]}
      */
-    #players;
+    #players
 
     /**
      * @param {AbstractPlayer[]} players - The players participating in the game.
      */
     constructor(players) {
-        this.#gameState = new GameState(new ClassicRule());
-        this.#players = players;
-        this.#startGame();
+        this.#gameState = new GameState(new ClassicRule())
+        this.#players = players
+        this.#startGame()
     }
 
     /**
@@ -46,20 +46,20 @@ class Game {
             statuses: position,
             turnIndex: this.#gameState.getTurnIndex(),
             game: this.#id,
-        });
+        })
 
         if (this.#players[this.#gameState.getTurnIndex()] !== player) {
-            throw new Error("Not this player's turn.");
+            throw new Error("Not this player's turn.")
         }
 
-        const turnIndex = this.#gameState.mark(position);
+        const turnIndex = this.#gameState.mark(position)
 
         setImmediate(() => {
-            this.#players[turnIndex].notifyAboutOpponentMove(position, this.#gameState.getBoard());
-        });
+            this.#players[turnIndex].notifyAboutOpponentMove(position, this.#gameState.getBoard())
+        })
 
         if (this.isGameFinished()) {
-            this.finishGame();
+            this.finishGame()
         }
     }
 
@@ -69,18 +69,18 @@ class Game {
     finishGame() {
         let statuses = []
         this.#players.forEach((player, index) => {
-            const status = this.#gameState.getWinStatus(index);
-            player.detachGame(status, this.#gameState);
-            statuses.push(player.getNickName() + ': ' + status);
-        });
+            const status = this.#gameState.getWinStatus(index)
+            player.detachGame(status, this.#gameState)
+            statuses.push(player.getNickName() + ': ' + status)
+        })
 
-        this.#gameState.getHistory().logHistory();
+        this.#gameState.getHistory().logHistory()
 
         console.log({
             message: 'Game finished.',
             statuses: statuses,
             game: this.#id,
-        });
+        })
     }
 
     /**
@@ -88,7 +88,7 @@ class Game {
      * @returns {boolean} True if the game is finished, otherwise false.
      */
     isGameFinished() {
-        return this.#gameState.isGameFinished();
+        return this.#gameState.isGameFinished()
     }
 
     /**
@@ -99,14 +99,14 @@ class Game {
             message: "Game started.",
             game: this.#id,
             players: this.#players.map(p => p.getNickName()),
-        });
+        })
 
         this.#players.forEach((player, index) => {
-            const opponentName = this.#players[1 - index].getNickName();
-            const isPlayerTurn = this.#gameState.getTurnIndex() === index;
-            player.startGame(this, opponentName, isPlayerTurn, this.#gameState.getBoard());
-        });
+            const opponentName = this.#players[1 - index].getNickName()
+            const isPlayerTurn = this.#gameState.getTurnIndex() === index
+            player.startGame(this, opponentName, isPlayerTurn, this.#gameState.getBoard())
+        })
     }
 }
 
-export {Game};
+export {Game}

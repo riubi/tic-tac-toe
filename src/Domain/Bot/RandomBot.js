@@ -1,4 +1,4 @@
-import {AbstractBot} from "./AbstractBot.js";
+import {AbstractBot} from "./AbstractBot.js"
 
 /**
  * Represents a bot that makes random moves in the game.
@@ -6,20 +6,20 @@ import {AbstractBot} from "./AbstractBot.js";
 class RandomBot extends AbstractBot {
     /** @override */
     _getBotName() {
-        return "RandomBot";
+        return "RandomBot"
     }
 
     /** @override */
     _makeBestMove(board) {
-        let filteredEntries = [];
+        let filteredEntries = []
 
         board.forEach((value, key) => {
-            value === null && filteredEntries.push(key);
-        });
+            value === null && filteredEntries.push(key)
+        })
 
-        let randomIndex = Math.floor(Math.random() * filteredEntries.length);
-        this.makeMove(filteredEntries[randomIndex]);
+        let randomIndex = Math.floor(Math.random() * filteredEntries.length)
+        this.makeMove(filteredEntries[randomIndex])
     }
 }
 
-export {RandomBot};
+export {RandomBot}

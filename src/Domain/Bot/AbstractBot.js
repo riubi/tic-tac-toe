@@ -1,4 +1,4 @@
-import {AbstractPlayer} from "../Player/AbstractPlayer.js";
+import {AbstractPlayer} from "../Player/AbstractPlayer.js"
 
 /**
  * Represents an abstract bot player in the game.
@@ -6,7 +6,7 @@ import {AbstractPlayer} from "../Player/AbstractPlayer.js";
 class AbstractBot extends AbstractPlayer {
     /** @override */
     getNickName() {
-        return this._getBotName() + ' #' + this.getId().substring(0, 3);
+        return this._getBotName() + ' #' + this.getId().substring(0, 3)
     }
 
     /**
@@ -14,25 +14,25 @@ class AbstractBot extends AbstractPlayer {
      * @returns {string} The default bot name.
      */
     _getBotName() {
-        return "Bot";
+        return "Bot"
     }
 
     /** @override */
     makeMove(position) {
-        this._getGame().makeMove(this, position);
+        this._getGame().makeMove(this, position)
     }
 
     /** @override */
     async notifyAboutOpponentMove(position, board) {
         if (this._game?.isGameFinished() === false) {
-            this._makeBestMove(board);
+            this._makeBestMove(board)
         }
     }
 
     /** @override */
     async _notifyAboutStart(opponentName, isMyTurn, board) {
         if (isMyTurn) {
-            this._makeBestMove(board);
+            this._makeBestMove(board)
         }
     }
 
@@ -45,4 +45,4 @@ class AbstractBot extends AbstractPlayer {
     }
 }
 
-export {AbstractBot};
+export {AbstractBot}

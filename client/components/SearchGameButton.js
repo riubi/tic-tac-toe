@@ -1,5 +1,5 @@
 import React from 'react'
-import {SafeAreaView, Button, Text} from "react-native"
+import {Button, SafeAreaView} from "react-native"
 
 export default function SearchGameButton({handler}) {
     const [wasPressed, pressButton] = React.useState(false)

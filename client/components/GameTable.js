@@ -1,140 +1,115 @@
-import React from 'react'
-import {TouchableHighlight, Button, Text, View, StyleSheet} from 'react-native'
+import React, {Component} from 'react'
+import {Button, StyleSheet, Text, TouchableHighlight, View} from 'react-native'
 import SearchGameButton from './SearchGameButton.js'
 
-class GameTable extends React.Component {
-    constructor({
-        subscriber,
-        moveHandler,
-        searchHandler,
-        quiteHandler,
-        isFirstTurn,
-        opponent
-    }) {
-        super()
+class GameTable extends Component {
+    constructor(props) {
+        super(props)
 
-        this.subscriber = subscriber
-        this.moveHandler = moveHandler
-        this.searchHandler = searchHandler
-        this.quiteHandler = quiteHandler
+        this.subscriber = props.subscriber
+        this.moveHandler = props.moveHandler
+        this.searchHandler = props.searchHandler
+        this.quiteHandler = props.quiteHandler
         this.rows = [0, 1, 2]
 
         this.state = {
             map: new Map(),
-            isMyTurn: isFirstTurn,
-            isFirstTurn: isFirstTurn,
+            isFirstTurn: props.isFirstTurn,
+            isMyTurn: props.isFirstTurn,
             isGameActive: true,
-            opponent: opponent
+            opponent: props.opponent,
+            prevGameResult: null,
         }
+    }
 
-        this.handlers = {
-            row: {},
-            text: {
-                style: (index) => {
-                    return this.state.map.get(index)
-                        ? styles.cross
-                        : styles.zero
-                },
-                content: (index) => {
-                    return this.state.map.has(index)
-                        ? (this.state.map.get(index) ? 'X' : 'O')
-                        : ''
-                }
-            }
-        }
+    getCellStyle = (index) => {
+        return this.state.map.get(index) ? styles.cross : styles.zero
+    }
+
+    getCellContent = (index) => {
+        return this.state.map.has(index)
+            ? (this.state.map.get(index) ? 'X' : 'O')
+            : ''
     }
 
     componentDidMount() {
         this.subscriber
-            .on('gameStarted', (data) => {
-                this.gameStart(data.opponent, data.isYourTurn)
-            })
-            .on('opponentMoved', (data) => {
-                this.updateOpponentMove(data.position)
-            })
-            .on('gameFinished', (data) => {
-                this.finishGame(data.status)
-            })
+            .on('gameStarted', (data) => this.gameStart(data.opponent, data.isYourTurn))
+            .on('opponentMoved', (data) => this.updateOpponentMove(data.position))
+            .on('gameFinished', (data) => this.finishGame(data.status))
     }
 
-    gameStart(opponent, isFirstTurn) {
+    gameStart = (opponent, isFirstTurn) => {
         this.setState({
             map: new Map(),
+            isFirstTurn,
             isMyTurn: isFirstTurn,
-            isFirstTurn: isFirstTurn,
             isGameActive: true,
-            opponent: opponent
+            opponent,
         })
     }
 
-    finishGame(result) {
-        this.state.isMyTurn = false
-        this.state.isGameActive = false
-        this.state.prevGameResult = result
-        this.setState(this.state)
+    finishGame = (result) => {
+        this.setState({
+            isMyTurn: false,
+            isGameActive: false,
+            prevGameResult: result,
+        })
     }
 
-    updateTurn(position) {
+    passBoardMove = (position, isCurrentPlayer = true) => {
+        this.setState((prevState) => {
+            const newMap = new Map(prevState.map)
+            const playerIndex = Number(isCurrentPlayer ? prevState.isFirstTurn : !prevState.isFirstTurn)
+            newMap.set(position, playerIndex)
+
+            return {
+                map: newMap,
+                isMyTurn: !prevState.isMyTurn,
+            }
+        })
+    }
+
+    updateTurn = (position) => {
         if (this.state.isMyTurn && this.state.isGameActive && !this.state.map.has(position)) {
-            const value = Number(this.state.isFirstTurn)
-            this.state.isMyTurn = false
-            this.state.map.set(position, value)
-
             this.moveHandler(position)
-            this.setState(this.state)
+            this.passBoardMove(position)
         }
     }
 
-    updateOpponentMove(position) {
-        this.state.map = this.state.map.set(position, Number(!this.state.isFirstTurn))
-        this.state.isMyTurn = true
-        this.setState(this.state)
+    updateOpponentMove = (position) => this.passBoardMove(position, false)
+
+    getStatus = () => {
+        return this.state.isGameActive
+            ? this.state.isMyTurn ? 'Your turn' : ''
+            : <Text style={styles.resultText}>{this.state.prevGameResult}</Text>
     }
 
-    updateMap(position, value) {
-        this.state.map.set(position, value)
-        this.setState(this.state)
-    }
-
-    getStatus() {
-        if (this.state.isGameActive) {
-            return this.state.isMyTurn ? 'Your turn' : ''
-        }
-
-        return <Text style={styles.resultText}>{this.state.prevGameResult}</Text>
-    }
-
-    getOpponent() {
-        return this.state.opponent ? this.state.opponent : 'Dude'
-    }
+    getOpponent = () => this.state.opponent || 'Dude'
 
     render() {
         const bottomButton = this.state.isGameActive
-            ? <Button onPress={() => this.quiteHandler()} color='steelblue' title='Quit'/>
+            ? <Button onPress={this.quiteHandler} color="steelblue" title="Quit"/>
             : <SearchGameButton style={styles.searchButton} handler={this.searchHandler}/>
 
         return (
             <View>
                 <View style={styles.header}>
-                    <Text style={styles.headerText}>
-                        {'vs '}{this.getOpponent()}
-                    </Text>
-                    <Text style={[styles.headerText, styles.colored]}>
-                        {this.getStatus()}
-                    </Text>
+                    <Text style={styles.headerText}>{'vs '}{this.getOpponent()}</Text>
+                    <Text style={[styles.headerText, styles.colored]}>{this.getStatus()}</Text>
                 </View>
                 <View style={styles.content}>
                     <View style={styles.table}>
-                        {this.rows.map((col, a) => (
-                            <View key={'col' + a} style={styles.col}>
-                                {this.rows.map((row, b) => (
+                        {this.rows.map((col) => (
+                            <View key={'col' + col} style={styles.col}>
+                                {this.rows.map((row) => (
                                     <TouchableHighlight
-                                        key={'row' + b}
+                                        key={'row' + row}
                                         style={styles.row}
-                                        onPress={() => this.updateTurn(col * this.rows.length + row)}
+                                        onPress={() => this.updateTurn(col * 3 + row)}
                                         underlayColor="whitesmoke">
-                                        <Text style={this.handlers.text.style(col * this.rows.length + row)}>
-                                            {this.handlers.text.content(col * this.rows.length + row)}
+                                        <Text style={this.getCellStyle(col * this.rows.length + row)}>
+                                            {this.getCellContent(col * this.rows.length + row)}
                                         </Text>
                                     </TouchableHighlight>
                                 ))}
@@ -142,9 +117,7 @@ class GameTable extends React.Component {
                         ))}
                     </View>
                 </View>
-                <View style={styles.footer}>
-                    {bottomButton}
-                </View>
+                <View style={styles.footer}>{bottomButton}</View>
             </View>
         )
     }

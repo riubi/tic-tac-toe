@@ -46,21 +46,21 @@ export default class GameApi {
         }
     }
 
-    setName() {
+    setNameFn() {
         return (name) => {
-            this.send('setName', { name: name })
+            this.send('setName', {name: name})
         }
     }
 
-    makeMove() {
-        return (position) => this.send('makeMove', { position: position });
+    makeMoveFn() {
+        return (position) => this.send('makeMove', {position: position})
     }
 
-    searchGame() {
+    searchGameFn() {
         return () => this.send('searchGame', {})
     }
 
-    quite() {
+    quitFn() {
         return () => this.send('quite', {})
     }
 

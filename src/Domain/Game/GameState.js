@@ -1,4 +1,4 @@
-import {GameHistory} from "./GameHistory.js";
+import {GameHistory} from "./GameHistory.js"
 
 /**
  * Represents the state of the game board, managing player turns and the game result.
@@ -8,39 +8,39 @@ class GameState {
      * Game board state.
      * @type {Map<number, number|null>}
      */
-    #board;
+    #board
 
     /**
      * Index of the player whose turn it is.
      * @type {number}
      */
-    #turnIndex = 1;
+    #turnIndex = 1
 
     /**
      * Stores the winner's index (-1 if no winner yet).
      * @type {number}
      */
-    #winnerIndex = -1;
+    #winnerIndex = -1
 
     /**
      * Stores the game history.
      * @type {GameHistory}
      */
-    #history;
+    #history
 
     /**
      * Stores the game rule set.
      * @type {ClassicRule}
      */
-    #rule;
+    #rule
 
     /**
      * @param {ClassicRule} rule - The rule set for the game.
      */
     constructor(rule) {
-        this.#rule = rule;
-        this.#board = new Map(Array.from({length: rule.getSize()}, (_, i) => [i, null]));
-        this.#history = new GameHistory();
+        this.#rule = rule
+        this.#board = new Map(Array.from({length: rule.getSize()}, (_, i) => [i, null]))
+        this.#history = new GameHistory()
     }
 
     /**
@@ -51,20 +51,20 @@ class GameState {
      */
     mark(position) {
         if (position >= this.#board.size || this.#board.get(position) !== null) {
-            throw new Error("This cell is already occupied.");
+            throw new Error("This cell is already occupied.")
         }
 
-        this.#history.recordMove(this.getTurnIndex(), position, this.getBoard());
-        this.#board.set(position, this.#turnIndex);
+        this.#history.recordMove(this.getTurnIndex(), position, this.getBoard())
+        this.#board.set(position, this.#turnIndex)
 
-        const winnerIndex = this.#rule.checkWinner(this.#board);
+        const winnerIndex = this.#rule.checkWinner(this.#board)
         if (winnerIndex !== null) {
-            this.#winnerIndex = winnerIndex;
+            this.#winnerIndex = winnerIndex
         }
 
-        this.#turnIndex = 1 - this.#turnIndex;
+        this.#turnIndex = 1 - this.#turnIndex
 
-        return this.#turnIndex;
+        return this.#turnIndex
     }
 
     /**
@@ -72,7 +72,7 @@ class GameState {
      * @returns {Map<number, number|null>} The game board.
      */
     getBoard() {
-        return this.#board;
+        return this.#board
     }
 
     /**
@@ -80,7 +80,7 @@ class GameState {
      * @returns {GameHistory} The game board history.
      */
     getHistory() {
-        return this.#history;
+        return this.#history
     }
 
     /**
@@ -88,7 +88,7 @@ class GameState {
      * @returns {number} The index of the active player.
      */
     getTurnIndex() {
-        return this.#turnIndex;
+        return this.#turnIndex
     }
 
     /**
@@ -96,7 +96,7 @@ class GameState {
      * @returns {boolean} True if the game is finished, otherwise false.
      */
     isGameFinished() {
-        return this.#winnerIndex !== -1 || ![...this.#board.values()].includes(null);
+        return this.#winnerIndex !== -1 || ![...this.#board.values()].includes(null)
     }
 
     /**
@@ -107,8 +107,8 @@ class GameState {
     getWinStatus(playerIndex) {
         return this.#winnerIndex === -1
             ? "draw"
-            : (playerIndex === this.#winnerIndex ? "win" : "lose");
+            : (playerIndex === this.#winnerIndex ? "win" : "lose")
     }
 }
 
-export {GameState};
+export {GameState}

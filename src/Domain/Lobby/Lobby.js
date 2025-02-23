@@ -1,8 +1,8 @@
-import {AbstractPlayer} from "../Player/AbstractPlayer.js";
-import {Game} from "../Game/Game.js";
-import {RandomBot} from "../Bot/RandomBot.js";
-import {AiModel} from "../Bot/AiModel.js";
-import {AiBot} from "../Bot/AiBot.js";
+import {AbstractPlayer} from "../Player/AbstractPlayer.js"
+import {Game} from "../Game/Game.js"
+import {RandomBot} from "../Bot/RandomBot.js"
+import {AiModel} from "../Bot/AiModel.js"
+import {AiBot} from "../Bot/AiBot.js"
 
 /**
  * Manages the game lobby, including player connections, game searches, and bot registrations.
@@ -12,20 +12,20 @@ class Lobby {
      * Set of connected players.
      * @type {Set<AbstractPlayer>}
      */
-    #players = new Set();
+    #players = new Set()
 
     /**
      * Queue of players searching for a game.
      * @type {AbstractPlayer[]}
      */
-    #searchQueue = [];
+    #searchQueue = []
 
     /**
      * Connect a player to the lobby.
      * @param {AbstractPlayer} player - The player to connect.
      */
     connect(player) {
-        this.#players.add(player);
+        this.#players.add(player)
     }
 
     /**
@@ -34,10 +34,10 @@ class Lobby {
      */
     disconnect(player) {
         if (player.hasActiveGame()) {
-            player.quit();
+            player.quit()
         }
-        this.#players.delete(player);
-        this.#searchQueue = this.#searchQueue.filter(p => p !== player);
+        this.#players.delete(player)
+        this.#searchQueue = this.#searchQueue.filter(p => p !== player)
     }
 
     /**
@@ -47,9 +47,9 @@ class Lobby {
      */
     searchAndStartGame(player) {
         if (player.hasActiveGame()) {
-            throw new Error("Player already has active game.");
+            throw new Error("Player already has active game.")
         }
-        this.#searchQueue.push(player);
+        this.#searchQueue.push(player)
     }
 
     /**
@@ -58,9 +58,9 @@ class Lobby {
     startGameIfPossible() {
         while (this.#searchQueue.length >= 2) {
             const players = [this.#searchQueue.shift(), this.#searchQueue.shift()]
-                .sort(() => Math.random() - 0.5);
+                .sort(() => Math.random() - 0.5)
 
-            new Game(players);
+            new Game(players)
         }
     }
 
@@ -68,33 +68,33 @@ class Lobby {
      * Start the lobby processes for bot registration and game matching.
      */
     start() {
-        this.#initBots();
+        this.#initBots()
 
         setInterval(() => {
-            this.startGameIfPossible();
-        }, 1000);
+            this.startGameIfPossible()
+        }, 1000)
     }
 
     /**
      * Registers bots into the search queue.
      */
     #initBots() {
-        const aiModel = new AiModel();
+        const aiModel = new AiModel()
 
         // Base Training Data Set
         setImmediate(async () => {
-            let gameIteration = 0;
+            let gameIteration = 0
             while (gameIteration++ <= 250) {
                 const players = [new AiBot(aiModel), new RandomBot()]
-                    .sort(() => Math.random() - 0.5);
-                new Game(players);
+                    .sort(() => Math.random() - 0.5)
+                new Game(players)
             }
-        });
+        })
 
         setInterval(() => {
-            this.searchAndStartGame(new AiBot(aiModel));
-        }, 10000);
+            this.searchAndStartGame(new AiBot(aiModel))
+        }, 10000)
     }
 }
 
-export {Lobby};
+export {Lobby}

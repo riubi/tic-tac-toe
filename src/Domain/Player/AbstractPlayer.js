@@ -1,4 +1,4 @@
-import {Util} from "../../Service/Util.js";
+import {Util} from "../../Service/Util.js"
 
 /**
  * Abstract class representing a player in the game.
@@ -8,26 +8,26 @@ class AbstractPlayer {
      * Unique identifier for the player.
      * @type {string}
      */
-    #id = Util.uuid();
+    #id = Util.uuid()
 
     /**
      * Reference to the current game the player is in.
      * @type {Game|null}
      */
-    _game = null;
+    _game = null
 
     /**
      * Reference to the current turn index in game.
      * @returns {number|null}
      */
-    _turnIndex = null;
+    _turnIndex = null
 
     /**
      * Get the player's unique ID.
      * @returns {string}
      */
     getId() {
-        return this.#id;
+        return this.#id
     }
 
     /**
@@ -79,11 +79,11 @@ class AbstractPlayer {
      */
     startGame(game, opponentName, isMyTurn, board) {
         if (this.hasActiveGame()) {
-            throw new Error("Player already in game.");
+            throw new Error("Player already in game.")
         }
-        this._game = game;
-        this._turnIndex = isMyTurn ? 1 : 0;
-        this._notifyAboutStart(opponentName, isMyTurn, board);
+        this._game = game
+        this._turnIndex = isMyTurn ? 1 : 0
+        this._notifyAboutStart(opponentName, isMyTurn, board)
     }
 
     /**
@@ -92,9 +92,9 @@ class AbstractPlayer {
      * @param {GameState} gameState - The current game state.
      */
     detachGame(status, gameState) {
-        this._notifyAboutGameFinish(status, gameState);
-        this._game = null;
-        this._turnIndex = null;
+        this._notifyAboutGameFinish(status, gameState)
+        this._game = null
+        this._turnIndex = null
     }
 
     /**
@@ -102,7 +102,7 @@ class AbstractPlayer {
      * @returns {boolean} True if the player is in a game, false otherwise.
      */
     hasActiveGame() {
-        return !!this._game;
+        return !!this._game
     }
 
     /**
@@ -112,9 +112,9 @@ class AbstractPlayer {
      */
     _getGame() {
         if (!this._game) {
-            throw new Error(`Player ${this.getId()} has no active game.`);
+            throw new Error(`Player ${this.getId()} has no active game.`)
         }
-        return this._game;
+        return this._game
     }
 
     /**
@@ -137,4 +137,4 @@ class AbstractPlayer {
     }
 }
 
-export {AbstractPlayer};
+export {AbstractPlayer}

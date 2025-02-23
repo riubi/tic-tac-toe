@@ -4,7 +4,7 @@ import {Router} from './Service/Router.js'
 import Express from 'express'
 import Config from 'config'
 
-const PORT = process.env.PORT || Config.get('port');
+const PORT = process.env.PORT || Config.get('port')
 const HOST = Config.get('host')
 
 console.info(`Starting listen on ${HOST}:${PORT}`)

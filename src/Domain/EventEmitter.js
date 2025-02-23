@@ -58,4 +58,4 @@ class EventEmitter {
     }
 }
 
-export {EventEmitter};
+export {EventEmitter}
