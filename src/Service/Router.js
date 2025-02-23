@@ -1,5 +1,5 @@
-import { Player } from "../domain/player.js"
-import { EventEmitter } from "../domain/event-emitter.js"
+import { Player } from "../Domain/Player/Player.js"
+import { EventEmitter } from "../Domain/EventEmitter.js"
 import { WebSocketServer } from "ws"
 
 class Router {
@@ -36,7 +36,7 @@ class Router {
                 player = new Player(messenger)
 
             if (connectMethod) {
-                console.log({ player: player.getId(), message: 'connected' })
+                console.info({ player: player.getId(), message: 'connected' })
                 connectMethod(player)
             }
 
@@ -45,7 +45,7 @@ class Router {
                     handler = this.#routes.get(data.type)
 
                 if (this.#debug) {
-                    console.log({ player: player.getId(), data: data })
+                    console.info({ player: player.getId(), data: data })
                     messenger.emit('debug', {
                         data: data
                     })
@@ -55,7 +55,7 @@ class Router {
                     try {
                         handler(player, data)
                     } catch (error) {
-                        console.log({ player: player.getId(), error: error })
+                        console.error({ player: player.getId(), error: error })
                     }
                 } else if (data.type == 'ping') {
                     messenger.emit('ping')
@@ -64,7 +64,7 @@ class Router {
 
             if (closeMethod) {
                 ws.on('close', (event) => {
-                    console.log({ player: player.getId(), message: 'disconnected' })
+                    console.info({ player: player.getId(), message: 'disconnected' })
                     closeMethod(player, event)
                 })
             }

@@ -1,30 +1,30 @@
-import { Bot } from "../src/domain/bot.js"
-import { Game } from "../src/domain/game.js"
+import {Game} from "../src/Domain/Game/Game.js"
+import {RandomBot} from "../src/Domain/Bot/RandomBot.js";
 
 describe("Bot", () => {
-    let bot1
-    let bot2
+    let bot1;
+    let bot2;
 
     beforeEach(() => {
-        bot1 = new Bot()
-        bot2 = new Bot()
-    })
+        bot1 = new RandomBot();
+        bot2 = new RandomBot();
+    });
 
-    test("bot has a nickname", () => {
-        expect(bot1.getNickName()).toMatch(/^Bot #\w{3}$/)
-    })
+    it("bot has a nickname", () => {
+        expect(bot1.getNickName()).toMatch(/^RandomBot #\w{3}$/);
+    });
 
-    test("bot makes a move", async () => {
+    it("bot makes a move", async () => {
         const sleep = function (ms) {
-            return new Promise((resolve) => setTimeout(resolve, ms))
+            return new Promise((resolve) => setTimeout(resolve, ms));
         }
 
-        const game = new Game([bot1, bot2])
+        const game = new Game([bot1, bot2]);
 
-        expect(game.isGameFinished()).toBe(false)
+        expect(game.isGameFinished()).toBe(false);
 
-        await sleep(500)
+        await sleep(250);
 
-        expect(game.isGameFinished()).toBe(true)
-    })
-})
+        expect(game.isGameFinished()).toBe(true);
+    });
+});

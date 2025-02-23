@@ -1,22 +1,22 @@
-import { WebSocketServer } from 'ws'
-import { Lobby } from './src/domain/lobby.js'
-import { Router } from './src/service/router.js'
+import {WebSocketServer} from 'ws'
+import {Lobby} from './Domain/Lobby/Lobby.js'
+import {Router} from './Service/Router.js'
 import Express from 'express'
 import Config from 'config'
 
-const PORT = process.env.PORT || Config.get('port'),
-    HOST = Config.get('host')
+const PORT = process.env.PORT || Config.get('port');
+const HOST = Config.get('host')
 
-console.log(`Starting listen on ${HOST}:${PORT}`)
+console.info(`Starting listen on ${HOST}:${PORT}`)
 
 const expressServer = Express()
-    .listen(PORT, HOST, () => console.log(`Listening on ${HOST}:${PORT}`))
+    .listen(PORT, HOST, () => console.info(`Listening on ${HOST}:${PORT}`))
 
 const
     server = new WebSocketServer({ server: expressServer }),
     router = new Router(Config.get('debug')),
     lobby = new Lobby()
-    lobby.registerBot()
+    lobby.start()
 
 router
     .on('connect', (player, data) => {
@@ -32,7 +32,7 @@ router
         player.makeMove(parseInt(data.position))
     })
     .on('quite', (player, data) => {
-        player.quite()
+        player.quit()
     })
     .on('close', (player, data) => {
         lobby.disconnect(player)

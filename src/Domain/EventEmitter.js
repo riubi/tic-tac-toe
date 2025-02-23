@@ -1,18 +1,16 @@
-import { Sender } from "ws"
-
 class EventEmitter {
     #connection
 
     /**
-     * @param {Sender} connection 
+     * @param {Sender} connection
      */
     constructor(connection) {
         this.#connection = connection
     }
 
     /**
-     * @param {String} type 
-     * @param {Object} data 
+     * @param {String} type
+     * @param {Object} data
      */
     emit(type, data) {
         data.type = type
@@ -20,12 +18,12 @@ class EventEmitter {
     }
 
     /**
-     * @param {String} oponentName 
-     * @param {Boolean} isMyTurn 
+     * @param {String} opponentName
+     * @param {Boolean} isMyTurn
      */
-    gameStarted(oponentName, isMyTurn) {
+    gameStarted(opponentName, isMyTurn) {
         this.emit('gameStarted', {
-            opponent: oponentName,
+            opponent: opponentName,
             isYourTurn: isMyTurn
         })
     }
@@ -40,7 +38,7 @@ class EventEmitter {
     }
 
     /**
-     * @param {String} status 
+     * @param {String} status
      */
     gameFinished(status) {
         this.emit('gameFinished', {
@@ -49,7 +47,7 @@ class EventEmitter {
     }
 
     /**
-     * @param {String} message 
+     * @param {String} message
      * @param {Integer} code
      */
     error(message, code) {
@@ -60,4 +58,4 @@ class EventEmitter {
     }
 }
 
-export { EventEmitter }
+export {EventEmitter};
