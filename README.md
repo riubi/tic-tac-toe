@@ -1,34 +1,78 @@
-Tic-Tac-Toe Multiplayer
-=========
-This pet project is a real-time multiplayer Tic-Tac-Toe game built using WebSockets, Express, React Native and Expo. Players can connect, set their names, and search for games. [Link to DEMO](https://tic-tac-toe.clu.by/)
+# Tic-Tac-Toe Game
 
-## Features
-- Real-time multiplayer gameplay using WebSockets
-- Bot implementation for seamless game matching
-- Lobby system for managing connections and starting games
-- Error handling and debugging options
+A simple real-time multiplayer Tic-Tac-Toe Game built with **Node.js, WebSockets, Express, React Native, and Expo**.
 
-## Tech Stack
-- JavaScript (ES6+)
-- Node.js
-- WebSocket Server (ws)
-- Express
-- ReactNative
-- Expo
+[Live Demo](https://tic-tac-toe.clu.by/)
 
-## Prerequisites
-- Ensure you have Node.js installed (version 12.x or higher).
-- Install the Expo CLI globally on your machine: npm install -g expo-cli
+---
 
-## Getting Started
-1. Clone the repository
-2. Run server - npm install & npm start
-3. Run client - npm install & npm start
+## 🚀 Some Features
 
-## Testing on a Device
-- Install the Expo Go app on your Android or iOS device. 
-- Scan the QR code displayed in the Expo DevTools using the Expo Go app. 
-- The app will now load and run on your device.
+- **Real-time multiplayer** with WebSockets
+- **AI-powered bots** for single-player mode
+- **Lobby system** for matchmaking and game management
+- **Cross-platform** support via React Native & Expo
 
-## Contributing
-Feel free to submit any pull requests. Contributions are always welcome! If you have any questions, issues, or feature requests, please leave a comment.
+---
+
+## 🛠 Tech Stack
+
+- **Backend:** Node.js, Express, WebSockets (ws), TensorFlow.js
+- **Frontend:** React Native, Expo
+
+---
+
+## 📌 Prerequisites
+
+- Install **[Node.js](https://nodejs.org/)** (v20.x or higher)
+- Install **[Expo CLI](https://docs.expo.dev/get-started/installation/)**:
+  ```sh
+  npm install -g expo-cli
+  ```
+
+---
+
+## 📦 Installation
+
+### 1️⃣ Start the **Server**
+
+```sh
+npm install
+npm start
+```
+
+The server will start on `http://localhost:3000`.
+
+📌 **Note:** The server starts with **random AI training cases**, and every **10 seconds**, a bot joins the lobby.
+
+---
+
+### 2️⃣ Start the **Client**
+
+```sh
+cd ../client
+npm install
+npm start
+```
+
+To run on your **device**, install **Expo Go** (iOS/Android) and scan the QR code.
+
+For **specific platforms**:
+
+- **Android:** `npm run android`
+- **iOS:** `npm run ios`
+- **Web:** `npm run web`
+
+---
+
+## 🛠 Development
+
+To run both **server** and **client** in parallel:
+
+```sh
+npm run dev
+```
+
+_(This uses `concurrently` to start both processes.)_
+
+---
