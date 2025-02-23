@@ -1,6 +1,6 @@
 import React from 'react'
-import { TouchableHighlight, Button, Text, View, StyleSheet } from 'react-native'
-import SearchGameButton from './search-game-button.js'
+import {TouchableHighlight, Button, Text, View, StyleSheet} from 'react-native'
+import SearchGameButton from './SearchGameButton.js'
 
 class GameTable extends React.Component {
     constructor({
@@ -28,8 +28,7 @@ class GameTable extends React.Component {
         }
 
         this.handlers = {
-            row: {
-            },
+            row: {},
             text: {
                 style: (index) => {
                     return this.state.map.get(index)
@@ -51,7 +50,7 @@ class GameTable extends React.Component {
                 this.gameStart(data.opponent, data.isYourTurn)
             })
             .on('opponentMoved', (data) => {
-                this.updateOponentMove(data.position)
+                this.updateOpponentMove(data.position)
             })
             .on('gameFinished', (data) => {
                 this.finishGame(data.status)
@@ -75,11 +74,6 @@ class GameTable extends React.Component {
         this.setState(this.state)
     }
 
-    updateFirstTurn(isFirstTurn) {
-        this.state.isFirstTurn = isFirstTurn
-        this.setState(this.state)
-    }
-
     updateTurn(position) {
         if (this.state.isMyTurn && this.state.isGameActive && !this.state.map.has(position)) {
             const value = Number(this.state.isFirstTurn)
@@ -91,7 +85,7 @@ class GameTable extends React.Component {
         }
     }
 
-    updateOponentMove(position) {
+    updateOpponentMove(position) {
         this.state.map = this.state.map.set(position, Number(!this.state.isFirstTurn))
         this.state.isMyTurn = true
         this.setState(this.state)
@@ -116,8 +110,8 @@ class GameTable extends React.Component {
 
     render() {
         const bottomButton = this.state.isGameActive
-            ? <Button onPress={() => this.quiteHandler()} color='steelblue' title='Quit' />
-            : <SearchGameButton style={styles.searchButton} handler={this.searchHandler} />
+            ? <Button onPress={() => this.quiteHandler()} color='steelblue' title='Quit'/>
+            : <SearchGameButton style={styles.searchButton} handler={this.searchHandler}/>
 
         return (
             <View>
@@ -129,7 +123,7 @@ class GameTable extends React.Component {
                         {this.getStatus()}
                     </Text>
                 </View>
-                <View style={styles.content} >
+                <View style={styles.content}>
                     <View style={styles.table}>
                         {this.rows.map((col, a) => (
                             <View key={'col' + a} style={styles.col}>
@@ -151,7 +145,7 @@ class GameTable extends React.Component {
                 <View style={styles.footer}>
                     {bottomButton}
                 </View>
-            </View >
+            </View>
         )
     }
 }

@@ -4,8 +4,7 @@ export default class GameApi {
     #subscriber
 
     /**
-     * @param {String} server 
-     * @param {Map<String,Function>} apiHandlers 
+     * @param {String} server
      */
     constructor(server) {
         this.#handlers = new Map()
