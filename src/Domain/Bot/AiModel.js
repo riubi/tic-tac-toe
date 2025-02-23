@@ -33,11 +33,17 @@ class AiModel {
      */
     #trainQueue;
 
+    /**
+     * Chance of making a random move instead of the best predicted move.
+     * @type {number}
+     */
+    #randomMoveChance = 0.1;
+
     constructor() {
         this.#model = this.#createModel();
         this.#trainQueue = new Queue({
             concurrent: 1,
-            interval: 50,
+            interval: 100,
             start: true,
         });
     }
@@ -52,17 +58,17 @@ class AiModel {
         const input = tf.tensor([this.#encodeBoardState(board, playerIndex)]);
         const predictions = this.#model.predict(input).arraySync()[0];
 
-        let bestMove = null;
-        let maxScore = -Infinity;
+        const availableMoves = [...board.keys()].filter(index => board.get(index) === null);
 
-        predictions.forEach((score, index) => {
-            if (board.get(index) === null && score > maxScore) {
-                maxScore = score;
-                bestMove = index;
-            }
-        });
+        // With a probability of #randomMoveChance, choose a random move
+        if (Math.random() < this.#randomMoveChance && availableMoves.length > 0) {
+            return availableMoves[Math.floor(Math.random() * availableMoves.length)];
+        }
 
-        return bestMove;
+        return availableMoves.reduce(
+            (bestMove, index) => (predictions[index] > (predictions[bestMove] ?? -Infinity) ? index : bestMove),
+            availableMoves[0]
+        );
     }
 
     /**

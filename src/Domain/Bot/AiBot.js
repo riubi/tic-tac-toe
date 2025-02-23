@@ -1,5 +1,6 @@
 import {AiModel} from "./AiModel.js";
 import {AbstractBot} from "./AbstractBot.js";
+import {RandomBot} from "./RandomBot.js";
 
 /**
  * Represents an AI-driven bot player in the game.
